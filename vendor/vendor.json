@@ -1,0 +1,95 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "cQmLPDb7Rgr/RPwxk0Ip8KwKn44=",
+			"path": "github.com/ArthurHlt/go-concourse-helper",
+			"revision": "c718d248f3edc9eff7261c75a4d2c4406aec2578",
+			"revisionTime": "2017-03-23T01:28:53Z"
+		},
+		{
+			"checksumSHA1": "gntLgvUzJqZWf4NYxJr3p/3gcvk=",
+			"path": "github.com/blang/semver",
+			"revision": "4a1e882c79dcf4ec00d2e29fac74b9c8938d5052",
+			"revisionTime": "2017-02-02T18:38:21Z"
+		},
+		{
+			"checksumSHA1": "BLBx9HSRPH8EPHHFEnBErhC8QfU=",
+			"origin": "github.com/jfrogdev/jfrog-cli-go/vendor/github.com/codegangsta/cli",
+			"path": "github.com/codegangsta/cli",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "EhSH72cc18i7S2d2Q3qkUwBGChA=",
+			"path": "github.com/jfrogdev/jfrog-cli-go/artifactory/commands",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "Jxx7lbNXvzp5emC5a+PFJjckCDg=",
+			"path": "github.com/jfrogdev/jfrog-cli-go/artifactory/utils",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "OdPv9su6uYGD3JfJqxzX+4utJdA=",
+			"path": "github.com/jfrogdev/jfrog-cli-go/utils/cliutils",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "yhiZ9lq6VoU2cPFmnFs59aSoJ1Q=",
+			"path": "github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "DYHYig/mdRZDvvkpoAmCGEzR37U=",
+			"path": "github.com/jfrogdev/jfrog-cli-go/utils/cliutils/types",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "LebYwvj0murVmCkANnI5sIetp/8=",
+			"path": "github.com/jfrogdev/jfrog-cli-go/utils/config",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "+DR7OmPpx2UxiUWlB2/i7rsnQec=",
+			"path": "github.com/jfrogdev/jfrog-cli-go/utils/ioutils",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "4gQDMNWk+eTJ4lSwVDW+MnwaB0U=",
+			"path": "github.com/mitchellh/colorstring",
+			"revision": "61164e49940b423ba1f12ddbdf01632ac793e5e9",
+			"revisionTime": "2015-02-28T18:11:56Z"
+		},
+		{
+			"checksumSHA1": "AMBhAXNq0e9HUcBFbcnSDEU5w5k=",
+			"origin": "github.com/jfrogdev/jfrog-cli-go/vendor/golang.org/x/crypto/curve25519",
+			"path": "golang.org/x/crypto/curve25519",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "EZrithCI21O/a2diYRZ/fEMuLaM=",
+			"origin": "github.com/jfrogdev/jfrog-cli-go/vendor/golang.org/x/crypto/ssh",
+			"path": "golang.org/x/crypto/ssh",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		},
+		{
+			"checksumSHA1": "H7UkOZUU9oZSNPZDzaFHAvW0Z1I=",
+			"origin": "github.com/jfrogdev/jfrog-cli-go/vendor/golang.org/x/crypto/ssh/terminal",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "a84cc1a88f00da3e34831e949b4e3e8be9fdc589",
+			"revisionTime": "2017-03-20T08:50:25Z"
+		}
+	],
+	"rootPath": "github.com/orange-cloudfoundry/artifactory-resource"
+}
