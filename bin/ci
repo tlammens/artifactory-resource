@@ -1,0 +1,10 @@
+#!/bin/bash
+# vim: set ft=sh
+set -eux
+BUILD_DIR=$PWD/built-resource
+
+CGO_ENABLED=1 go test -v ./...
+
+./bin/build
+
+cp -a assets/ Dockerfile $BUILD_DIR

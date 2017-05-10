@@ -1,0 +1,29 @@
+package model
+
+type Source struct {
+	Url       string `json:"url"`
+	User      string `json:"user"`
+	Password  string `json:"password"`
+	ApiKey    string `json:"apiKey"`
+	SshKey    string `json:"ssh_key"`
+	Pattern   string `json:"pattern"`
+	Props     string `json:"props"`
+	Recursive bool   `json:"recursive"`
+	Flat      bool   `json:"flat"`
+	Regexp    bool   `json:"regexp"`
+	Version   string `json:"version"`
+	LogLevel  string `json:"log_level"`
+	CACert    string `json:"ca_cert"`
+}
+type InParams struct {
+	Filename   string  `json:"filename"`
+	Threads    int     `json:"threads"`
+	MinSplit   float64 `json:"min_split"`
+	SplitCount int     `json:"split_count"`
+}
+type OutParams struct {
+	Target         string `json:"target"`
+	Source         string `json:"source"`
+	Threads        int    `json:"threads"`
+	ExplodeArchive bool   `json:"explode_archive"`
+}
