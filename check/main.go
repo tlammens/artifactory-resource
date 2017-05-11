@@ -21,7 +21,7 @@ type SemverFile struct {
 }
 
 const (
-	SEMVER_REGEX = `(v|-|_)?v?((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)`
+	SEMVER_REGEX = `(v|-|_)?v?((?:0|[1-9]\d*)\.?(?:0|[1-9]\d*)?\.?(?:0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)`
 )
 
 type Check struct {
@@ -90,7 +90,7 @@ func (c Check) RetrieveVersions(results []commands.SearchResult) ([]chelper.Vers
 	return versions, nil
 }
 func (c *Check) RetrieveRange() (semver.Range, error) {
-	rangeSem, err := semver.ParseRange(c.source.Version)
+	rangeSem, err := semver.ParseRange(c.SanitizeVersion(c.source.Version))
 	if err != nil {
 		return nil, errors.New("Error when trying to create semver range: " + err.Error())
 	}
@@ -139,6 +139,15 @@ func (c Check) ResultsToSemverFilesFiltered(results []commands.SearchResult, ran
 	}
 	return semverFiles
 }
+func (c Check) SanitizeVersion(version string) string {
+	splitVersion := strings.Split(version, ".")
+	if len(splitVersion) == 1 {
+		version += ".0.0"
+	} else if len(splitVersion) == 2 {
+		version += ".0"
+	}
+	return version
+}
 func (c Check) SemverFromPath(path string) (SemverFile, error) {
 	if path == "" {
 		return SemverFile{}, nil
@@ -157,7 +166,9 @@ func (c Check) SemverFromPath(path string) (SemverFile, error) {
 	if len(allMatch[0]) < 3 {
 		return SemverFile{}, errors.New("Cannot find any semver in file.")
 	}
-	semverFound, err := semver.Make(allMatch[0][2])
+	versionFound := c.SanitizeVersion(allMatch[0][2])
+
+	semverFound, err := semver.Make(versionFound)
 	if err != nil {
 		return SemverFile{}, err
 	}
