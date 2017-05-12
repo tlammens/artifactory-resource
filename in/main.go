@@ -26,7 +26,6 @@ func main() {
 	in.Run()
 }
 func (c *In) Run() {
-	fmt.Println("p")
 	cmd := c.cmd
 	msg := c.cmd.Messager()
 	err := cmd.Source(&c.source)
@@ -48,7 +47,10 @@ func (c *In) Run() {
 	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, false, false)
 	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
 	startDl := time.Now()
+
+	fmt.Println("p")
 	err = c.Download()
+	fmt.Println("e")
 	msg.FatalIf("Error when downloading", err)
 	elapsed := time.Since(startDl)
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
