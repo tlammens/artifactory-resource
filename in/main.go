@@ -53,7 +53,7 @@ func (c *In) Run() {
 	metadata := []chelper.Metadata{
 		{
 			Name:  "build",
-			Value: c.cmd.Version(),
+			Value: c.cmd.Version().BuildNumber,
 		},
 		{
 			Name:  "downloaded_file",
