@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
@@ -51,14 +50,17 @@ func (c *In) Run() {
 	err = c.Download()
 	msg.FatalIf("Error when downloading", err)
 	elapsed := time.Since(startDl)
-	elapsed = elapsed
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
-	metadata := []chelper.Metadata{}
-	b, _ := json.MarshalIndent(chelper.Response{
-		Metadata: metadata,
-		Version:  c.cmd.Version(),
-	}, "", "\t")
-	msg.Log(string(b))
+	metadata := []chelper.Metadata{
+		{
+			Name:  "downloaded_file",
+			Value: filePath,
+		},
+		{
+			Name:  "download_time",
+			Value: elapsed.String(),
+		},
+	}
 	cmd.Send(metadata)
 }
 
