@@ -47,7 +47,6 @@ func (rl *Messager) RetrieveJsonRequest(v interface{}) error {
 }
 func (rl *Messager) SendJsonResponse(v interface{}) {
 	json.NewEncoder(rl.ResponseWriter).Encode(v)
-	json.NewEncoder(rl.LogWriter).Encode(v)
 }
 func (rl *Messager) GetLogWriter() io.Writer {
 	return rl.LogWriter
