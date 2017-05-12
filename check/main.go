@@ -73,13 +73,13 @@ func (c Check) RetrieveVersions(results []commands.SearchResult) ([]chelper.Vers
 	}
 	if c.source.Version == "" {
 		for _, file := range results {
-			versions = append(versions, file.Path)
+			versions = append(versions, chelper.Version{file.Path})
 		}
 		return versions, nil
 	}
 	semverPrevious := c.RetrieveSemverFilePrevious()
 	if semverPrevious.Path != "" {
-		versions = append(versions, semverPrevious.Path)
+		versions = append(versions, chelper.Version{semverPrevious.Path})
 	}
 	rangeSem, err := c.RetrieveRange()
 	if err != nil {
@@ -108,12 +108,12 @@ func (c Check) SemverFilesToVersions(semverFiles []SemverFile) []chelper.Version
 	})
 	versions := make([]chelper.Version, 0)
 	for _, fileSemver := range semverFiles {
-		versions = append(versions, fileSemver.Path)
+		versions = append(versions, chelper.Version{fileSemver.Path})
 	}
 	return versions
 }
 func (c Check) RetrieveSemverFilePrevious() SemverFile {
-	semverFile, _ := c.SemverFromPath(c.cmd.Version())
+	semverFile, _ := c.SemverFromPath(c.cmd.Version().BuildNumber)
 	return semverFile
 }
 func (c Check) ResultsToSemverFilesFiltered(results []commands.SearchResult, rangeSem semver.Range) []SemverFile {
