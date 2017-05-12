@@ -37,5 +37,6 @@ func (c *Command) load() {
 func (c Command) Send(metadata []Metadata) {
 	c.messager.SendJsonResponse(Response{
 		Metadata: metadata,
+		Version:  c.request.Version,
 	})
 }

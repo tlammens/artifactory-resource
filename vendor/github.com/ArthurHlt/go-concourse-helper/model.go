@@ -15,6 +15,6 @@ type Request struct {
 }
 
 type Response struct {
-	Metadata []Metadata `json:"metadata"`
 	Version  Version    `json:"version"`
+	Metadata []Metadata `json:"metadata"`
 }
