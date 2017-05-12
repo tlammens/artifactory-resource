@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
@@ -60,6 +61,7 @@ func (c *In) Run() {
 			Value: elapsed.String(),
 		},
 	}
+	fmt.Println("p")
 	cmd.Send(metadata)
 }
 

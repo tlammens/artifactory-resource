@@ -86,7 +86,7 @@ func OverrideLoggerArtifactory(logLevel string) {
 	if val, ok := artlog.LogLevel[strings.ToUpper(logLevel)]; ok {
 		logger.LogLevel = val
 	}
-	logger.DebugLog = log.New(os.Stderr, "[cyan][Artifactory Debug] ", 0)
+	logger.DebugLog = log.New(os.Stderr, colorstring.Color("[cyan][Artifactory Debug] "), 0)
 	logger.InfoLog = log.New(os.Stderr, colorstring.Color("[blue][Artifactory Info] "), 0)
 	logger.WarnLog = log.New(os.Stderr, colorstring.Color("[yellow][Artifactory Warn] "), 0)
 	logger.ErrorLog = log.New(os.Stderr, colorstring.Color("[red][Artifactory Error] "), 0)
