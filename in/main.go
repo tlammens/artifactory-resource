@@ -26,6 +26,7 @@ func main() {
 	in.Run()
 }
 func (c *In) Run() {
+	fmt.Println("p")
 	cmd := c.cmd
 	msg := c.cmd.Messager()
 	err := cmd.Source(&c.source)
@@ -61,7 +62,6 @@ func (c *In) Run() {
 			Value: elapsed.String(),
 		},
 	}
-	fmt.Println("p")
 	cmd.Send(metadata)
 }
 
