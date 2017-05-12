@@ -7,8 +7,8 @@ import (
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
+	"os"
 	"time"
-	"github.com/charlievieth/fs/testdata"
 )
 
 type In struct {
