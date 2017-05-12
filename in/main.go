@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
@@ -9,6 +8,7 @@ import (
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
 	"time"
+	"github.com/charlievieth/fs/testdata"
 )
 
 type In struct {
@@ -47,9 +47,10 @@ func (c *In) Run() {
 	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, false, false)
 	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
 	startDl := time.Now()
-
+	origStdout := os.Stdout
+	os.Stdout = os.Stderr
 	err = c.Download()
-	fmt.Println("e")
+	os.Stdout = origStdout
 	msg.FatalIf("Error when downloading", err)
 	elapsed := time.Since(startDl)
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
