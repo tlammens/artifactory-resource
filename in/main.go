@@ -48,7 +48,6 @@ func (c *In) Run() {
 	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
 	startDl := time.Now()
 
-	fmt.Println("p")
 	err = c.Download()
 	fmt.Println("e")
 	msg.FatalIf("Error when downloading", err)
