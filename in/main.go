@@ -51,13 +51,9 @@ func (c *In) Run() {
 	err = c.Download()
 	msg.FatalIf("Error when downloading", err)
 	elapsed := time.Since(startDl)
+	elapsed = elapsed
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
-	metadata := []chelper.Metadata{
-		{
-			Name:  "download_time",
-			Value: elapsed.String(),
-		},
-	}
+	metadata := []chelper.Metadata{}
 	b, _ := json.MarshalIndent(chelper.Response{
 		Metadata: metadata,
 		Version:  c.cmd.Version(),
