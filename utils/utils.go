@@ -1,9 +1,7 @@
 package utils
 
 import (
-	"encoding/base64"
 	"errors"
-	chelper "github.com/ArthurHlt/go-concourse-helper"
 	artlog "github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/mitchellh/colorstring"
@@ -43,15 +41,7 @@ func RetrieveArtDetails(source model.Source) (*config.ArtifactoryDetails, error)
 	}, nil
 
 }
-func PathToVersion(path string) chelper.Version {
-	return chelper.Version{
-		BuildNumber: base64.RawStdEncoding.EncodeToString([]byte(path)),
-	}
-}
-func VersionToPath(version chelper.Version) string {
-	b, _ := base64.RawStdEncoding.DecodeString(version.BuildNumber)
-	return string(b)
-}
+
 func AddTrailingSlashIfNeeded(path string) string {
 	if path != "" && !strings.HasSuffix(path, "/") {
 		path += "/"
