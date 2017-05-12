@@ -48,7 +48,7 @@ func (c *In) Run() {
 	} else {
 		dest += fpath.Base(filePath)
 	}
-	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, false, false)
+	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, !c.params.Notflat, false)
 	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
 	startDl := time.Now()
 	origStdout := os.Stdout

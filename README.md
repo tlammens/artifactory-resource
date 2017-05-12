@@ -44,6 +44,8 @@ Find all files matching the pattern and filter by their version if `version` is 
 
 * `filename`: *Optional.* If set filename for the downloaded file will be overwritten by this name.
 
+* `not_flat`: *Optional.* If true artifacts are downloaded to the target path in the file system while maintaining their hierarchy in the source repository.
+
 * `min_split`: *Default: 5120* The minimum size permitted for splitting. Files larger than the specified number will be split into equally sized `split_count` segments. 
 Any files smaller than the specified number will be downloaded in a single thread. If set to -1, files are not split.
 

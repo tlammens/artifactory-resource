@@ -17,6 +17,7 @@ type Source struct {
 }
 type InParams struct {
 	Filename   string `json:"filename"`
+	Notflat    bool   `json:"not_flat"`
 	Threads    int    `json:"threads"`
 	MinSplit   int    `json:"min_split"`
 	SplitCount int    `json:"split_count"`
