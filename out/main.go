@@ -8,6 +8,7 @@ import (
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
+	"os"
 	"time"
 )
 
@@ -50,7 +51,10 @@ func (c *Out) Run() {
 	c.spec = artutils.CreateSpec(src, target, c.source.Props, true, true, c.source.Regexp)
 	msg.Log("[blue]Uploading[reset] file(s) to target '[blue]%s[reset]'...", target)
 	startDl := time.Now()
+	origStdout := os.Stdout
+	os.Stdout = os.Stderr
 	totalUploaded, totalFailed, err := c.Upload()
+	os.Stdout = origStdout
 	msg.FatalIf("Error when uploading", err)
 	if totalFailed > 0 {
 		msg.Fatal(fmt.Sprintf("%d files failed to upload", totalFailed))

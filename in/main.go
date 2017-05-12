@@ -8,6 +8,7 @@ import (
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
 	"os"
+	fpath "path/filepath"
 	"time"
 )
 
@@ -39,11 +40,14 @@ func (c *In) Run() {
 	if err != nil {
 		msg.Fatal(err.Error())
 	}
+
+	filePath := c.cmd.Version().BuildNumber
 	dest := utils.AddTrailingSlashIfNeeded(c.cmd.DestinationFolder())
 	if c.params.Filename != "" {
 		dest += c.params.Filename
+	} else {
+		dest += fpath.Base(filePath)
 	}
-	filePath := c.cmd.Version().BuildNumber
 	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, false, false)
 	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
 	startDl := time.Now()

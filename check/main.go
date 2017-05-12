@@ -9,6 +9,7 @@ import (
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -51,7 +52,10 @@ func (c *Check) Run() {
 		msg.Fatal(err.Error())
 	}
 	c.spec = artutils.CreateSpec(c.source.Pattern, "", c.source.Props, c.source.Recursive, c.source.Flat, c.source.Regexp)
+	origStdout := os.Stdout
+	os.Stdout = os.Stderr
 	results, err := c.Search()
+	os.Stdout = origStdout
 	msg.FatalIf("Error when trying to find latest file", err)
 	versions, err := c.RetrieveVersions(results)
 	msg.FatalIf("Error when retrieving versions", err)
