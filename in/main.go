@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
@@ -62,13 +60,7 @@ func (c *In) Run() {
 			Value: elapsed.String(),
 		},
 	}
-	resp := chelper.Response{
-		Metadata: metadata,
-		Version:  c.cmd.Version(),
-	}
-	b, _ := json.Marshal(resp)
-	fmt.Println(string(b))
-	//cmd.Send(metadata)
+	cmd.Send(metadata)
 }
 
 func (c *In) defaultingParams() {

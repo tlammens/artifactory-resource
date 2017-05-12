@@ -1,2 +1,2 @@
-FROM concourse/busyboxplus:base
+FROM concourse/buildroot:base
 ADD assets/ /opt/resource/
