@@ -54,10 +54,6 @@ func (c *In) Run() {
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
 	metadata := []chelper.Metadata{
 		{
-			Name:  "downloaded_file",
-			Value: filePath,
-		},
-		{
 			Name:  "download_time",
 			Value: elapsed.String(),
 		},
