@@ -1,12 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
+	"time"
 )
 
 type In struct {
@@ -44,17 +46,28 @@ func (c *In) Run() {
 	}
 	filePath := utils.VersionToPath(c.cmd.Version())
 	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, false, false)
-	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]' to '[blue]%s[reset]' ...", filePath, dest)
+	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
+	startDl := time.Now()
 	err = c.Download()
 	msg.FatalIf("Error when downloading", err)
-	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]' to '[blue]%s[reset]' .", filePath, dest)
-
-	cmd.Send([]chelper.Metadata{
+	elapsed := time.Since(startDl)
+	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
+	metadata := []chelper.Metadata{
 		{
 			Name:  "downloaded_file",
 			Value: filePath,
 		},
-	})
+		{
+			Name:  "download_time",
+			Value: elapsed.String(),
+		},
+	}
+	b, _ := json.MarshalIndent(chelper.Response{
+		Metadata: metadata,
+		Version:  c.cmd.Version(),
+	}, "", "\t")
+	msg.Log(string(b))
+	cmd.Send(metadata)
 }
 
 func (c *In) defaultingParams() {

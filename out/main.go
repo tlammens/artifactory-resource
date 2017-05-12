@@ -8,6 +8,7 @@ import (
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
+	"time"
 )
 
 type Out struct {
@@ -48,17 +49,23 @@ func (c *Out) Run() {
 
 	c.spec = artutils.CreateSpec(src, target, c.source.Props, true, true, c.source.Regexp)
 	msg.Log("[blue]Uploading[reset] file(s) to target '[blue]%s[reset]'...", target)
+	startDl := time.Now()
 	totalUploaded, totalFailed, err := c.Upload()
 	msg.FatalIf("Error when uploading", err)
 	if totalFailed > 0 {
 		msg.Fatal(fmt.Sprintf("%d files failed to upload", totalFailed))
 	}
+	elapsed := time.Since(startDl)
 	msg.Log("[blue]Finished uploading[reset] file(s) to target '[blue]%s[reset]'.", target)
 
 	cmd.Send([]chelper.Metadata{
 		{
 			Name:  "total_uploaded",
 			Value: fmt.Sprintf("%d", totalUploaded),
+		},
+		{
+			Name:  "upload_time",
+			Value: elapsed.String(),
 		},
 	})
 }
