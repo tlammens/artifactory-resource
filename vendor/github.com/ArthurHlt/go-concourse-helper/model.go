@@ -1,7 +1,7 @@
 package go_concourse_helper
 
 type Version struct {
-	BuildNumber string `json:"build"`
+	BuildNumber string `json:"path"`
 }
 
 type Metadata struct {

@@ -42,7 +42,6 @@ func (c *In) Run() {
 	if c.params.Filename != "" {
 		dest += c.params.Filename
 	}
-	msg.Log(dest)
 	filePath := utils.VersionToPath(c.cmd.Version())
 	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, false, false)
 	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
