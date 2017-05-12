@@ -8,7 +8,6 @@ import (
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
 	"time"
-	"encoding/json"
 )
 
 type In struct {
@@ -31,8 +30,6 @@ func (c *In) Run() {
 	err := cmd.Source(&c.source)
 	msg.FatalIf("Error when parsing source from concourse", err)
 	utils.OverrideLoggerArtifactory(c.source.LogLevel)
-	b, _ := json.MarshalIndent(c.source, "", "\t")
-	msg.Logln(string(b))
 	err = cmd.Params(&c.params)
 	msg.FatalIf("Error when parsing params from concourse", err)
 	c.defaultingParams()
@@ -54,6 +51,10 @@ func (c *In) Run() {
 	elapsed := time.Since(startDl)
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
 	metadata := []chelper.Metadata{
+		{
+			Name:  "build",
+			Value: c.cmd.Version(),
+		},
 		{
 			Name:  "downloaded_file",
 			Value: filePath,
