@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
@@ -52,10 +54,6 @@ func (c *In) Run() {
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
 	metadata := []chelper.Metadata{
 		{
-			Name:  "build",
-			Value: c.cmd.Version().BuildNumber,
-		},
-		{
 			Name:  "downloaded_file",
 			Value: filePath,
 		},
@@ -64,7 +62,13 @@ func (c *In) Run() {
 			Value: elapsed.String(),
 		},
 	}
-	cmd.Send(metadata)
+	resp := chelper.Response{
+		Metadata: metadata,
+		Version:  c.cmd.Version(),
+	}
+	b, _ := json.Marshal(resp)
+	fmt.Println(string(b))
+	//cmd.Send(metadata)
 }
 
 func (c *In) defaultingParams() {
@@ -74,8 +78,8 @@ func (c *In) defaultingParams() {
 	if c.params.SplitCount <= 0 {
 		c.params.SplitCount = 3
 	}
-	if c.params.MinSplit <= float64(0) {
-		c.params.MinSplit = float64(5120)
+	if c.params.MinSplit <= 0 {
+		c.params.MinSplit = 5120
 	}
 }
 
