@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"time"
+
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
-	"os"
-	"time"
 )
 
 type Out struct {
@@ -45,10 +47,12 @@ func (c *Out) Run() {
 	if err != nil {
 		msg.Fatal(err.Error())
 	}
-	src := c.SourceFolder()
+	src := c.folderPath(c.params.Source)
 	target := utils.AddTrailingSlashIfNeeded(c.params.Target)
 
-	c.spec = artutils.CreateSpec(src, target, c.source.Props, true, true, c.source.Regexp)
+	props := c.mergeProps()
+
+	c.spec = artutils.CreateSpec(src, target, props, true, true, c.source.Regexp)
 	msg.Log("[blue]Uploading[reset] file(s) to target '[blue]%s[reset]'...", target)
 	startDl := time.Now()
 	origStdout := os.Stdout
@@ -79,9 +83,9 @@ func (c *Out) defaultingParams() {
 		c.params.Threads = 3
 	}
 }
-func (c Out) SourceFolder() string {
+func (c Out) folderPath(p string) string {
 	src := utils.AddTrailingSlashIfNeeded(c.cmd.SourceFolder())
-	src += utils.RemoveStartingSlashIfNeeded(c.params.Source)
+	src += utils.RemoveStartingSlashIfNeeded(p)
 	return src
 }
 func (c Out) Upload() (totalUploaded, totalFailed int, err error) {
@@ -93,4 +97,24 @@ func (c Out) Upload() (totalUploaded, totalFailed int, err error) {
 			ExplodeArchive: c.params.ExplodeArchive,
 		},
 	)
+}
+func (c Out) mergeProps() string {
+	msg := c.cmd.Messager()
+	props := ""
+	if c.params.Props != "" {
+		props = c.params.Props
+	}
+	if c.params.Props != "" && c.params.PropsFromFile != "" {
+		props += ";"
+	}
+	if c.params.PropsFromFile != "" {
+		dat, err := ioutil.ReadFile(c.folderPath(c.params.PropsFromFile))
+		if err != nil {
+			msg.Logln("Could not read file with props from path: %s; %v", c.params.PropsFromFile, err)
+			msg.Fatal("error opening file")
+		}
+		props += string(dat)
+	}
+
+	return props
 }

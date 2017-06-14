@@ -27,4 +27,6 @@ type OutParams struct {
 	Source         string `json:"source"`
 	Threads        int    `json:"threads"`
 	ExplodeArchive bool   `json:"explode_archive"`
+	Props          string `json:"props"`
+	PropsFromFile  string `json:"props_from_file"`
 }

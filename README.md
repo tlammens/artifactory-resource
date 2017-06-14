@@ -63,6 +63,10 @@ Any files smaller than the specified number will be downloaded in a single threa
 
 * `explode_archive`: *Default: false* If true, the command will extract an archive containing multiple artifacts after it is deployed to Artifactory, while maintaining the archive's file structure.
 
+* `props`: *Optional.* List of properties in the form of "key1=value1;key2=value2,...". Those properties will be added to uploaded file. If both `props` and `props_from_file` are set values will be merged.
+
+* `props_from_file`: *Optional.* Path to file which will contain list of properties. List should be in the form of "key1=value1;key2=value2,...". Those properties will be added to uploaded file. If both `props` and `props_from_file` are set values will be merged.
+
 ## Example
 
 ``` yaml
