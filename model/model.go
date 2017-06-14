@@ -16,11 +16,12 @@ type Source struct {
 	CACert    string `json:"ca_cert"`
 }
 type InParams struct {
-	Filename   string `json:"filename"`
-	Notflat    bool   `json:"not_flat"`
-	Threads    int    `json:"threads"`
-	MinSplit   int    `json:"min_split"`
-	SplitCount int    `json:"split_count"`
+	Filename      string `json:"filename"`
+	Notflat       bool   `json:"not_flat"`
+	Threads       int    `json:"threads"`
+	MinSplit      int    `json:"min_split"`
+	SplitCount    int    `json:"split_count"`
+	PropsFilename string `json:"props_filename"`
 }
 type OutParams struct {
 	Target         string `json:"target"`
