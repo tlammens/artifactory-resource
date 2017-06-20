@@ -1,15 +1,23 @@
 package main
 
 import (
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path"
+	fpath "path/filepath"
+	"time"
+
+	"crypto/tls"
+	"crypto/x509"
+
 	chelper "github.com/ArthurHlt/go-concourse-helper"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
 	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
-	"os"
-	fpath "path/filepath"
-	"time"
 )
 
 type In struct {
@@ -58,6 +66,14 @@ func (c *In) Run() {
 	msg.FatalIf("Error when downloading", err)
 	elapsed := time.Since(startDl)
 	msg.Log("[blue]Finished downloading[reset] file '[blue]%s[reset]'.", filePath)
+
+	if c.params.PropsFilename != "" {
+		msg.Logln("\n[blue]Downloading properties[reset] file '[blue]%s[reset]'.", c.params.PropsFilename)
+		err = c.DownloadProperties()
+		msg.FatalIf("Error downloading properties", err)
+		msg.Logln("\n[blue]Finished downloading properties[reset] file '[blue]%s[reset]'.", c.params.PropsFilename)
+	}
+
 	metadata := []chelper.Metadata{
 		{
 			Name:  "downloaded_file",
@@ -93,4 +109,47 @@ func (c In) Download() error {
 			MinSplitSize: int64(c.params.MinSplit),
 		},
 	)
+}
+
+func (c In) DownloadProperties() error {
+	msg := c.cmd.Messager()
+
+	url := fmt.Sprintf("%sapi/storage/%s?properties", c.artdetails.Url, c.cmd.Version().BuildNumber)
+
+	req, err := http.NewRequest("GET", url, nil)
+	msg.FatalIf("Error downloading properties", err)
+	req.SetBasicAuth(c.artdetails.GetUser(), c.artdetails.GetPassword())
+	client := &http.Client{}
+	if c.source.CACert != "" {
+		caPool := x509.NewCertPool()
+		ok := caPool.AppendCertsFromPEM([]byte(c.source.CACert))
+		if !ok {
+			msg.Logln(fmt.Sprintf("%v", err))
+			msg.Fatal("Error parsing pem certificate")
+		}
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs: caPool,
+			},
+		}
+		client.Transport = tr
+	}
+	resp, err := client.Do(req)
+	msg.FatalIf("Error downloading properties", err)
+	defer resp.Body.Close()
+
+	if !(resp.StatusCode == 200 || resp.StatusCode == 404) {
+		msg.Fatal(fmt.Sprintf("\nCouldn't get properties info. Response code: %d", resp.StatusCode))
+	}
+
+	basepath := path.Dir(c.params.PropsFilename)
+	err = os.MkdirAll(basepath, 0777)
+	msg.FatalIf(fmt.Sprintf("\nCouldn't create folder: %s", basepath), err)
+	out, err := os.Create(c.params.PropsFilename)
+	msg.FatalIf("Couldn't create properties file", err)
+	defer out.Close()
+
+	io.Copy(out, resp.Body)
+
+	return nil
 }

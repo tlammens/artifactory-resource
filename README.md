@@ -51,6 +51,8 @@ Any files smaller than the specified number will be downloaded in a single threa
 
 * `split_count`: *Default: 3* The number of segments into which each file should be split for download (provided the artifact is over --min-split in size). To download each file in a single thread, set to 0.
 
+* `props_filename`: *Optional.* Path to file where Artifactory properties of downloaded file will be stored. File will contain whole REST API response and properties values can be extracted with other tools like jq. If parameter is empty - no request to Artifactory will be made.
+
 ### `out`: Upload a file to artifactory.
 
 #### Parameters
