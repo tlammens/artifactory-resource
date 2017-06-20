@@ -8,24 +8,23 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/types"
-	"golang.org/x/crypto/ssh/terminal"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"os/user"
-	"path"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/types"
+	"golang.org/x/crypto/ssh/terminal"
 	"syscall"
+	"path"
 )
 
 const SYMLINK_FILE_CONTENT = ""
-
 var tempDirPath string
 
 func GetFileSeperator() string {
@@ -58,7 +57,7 @@ func IsPathSymlink(path string) bool {
 }
 
 func IsFileSymlink(file os.FileInfo) bool {
-	return file.Mode()&os.ModeSymlink != 0
+	return file.Mode() & os.ModeSymlink != 0
 }
 
 func IsDir(path string) (bool, error) {
@@ -83,7 +82,7 @@ func GetFileAndDirFromPath(path string) (fileName, dir string) {
 		index = index2
 	}
 	if index != -1 {
-		fileName = path[index+1:]
+		fileName = path[index + 1:]
 		dir = path[:index]
 		return
 	}
@@ -138,7 +137,7 @@ func ListFiles(path string) ([]string, error) {
 	}
 	fileList := []string{}
 	files, _ := ioutil.ReadDir(path)
-	path = strings.TrimPrefix(path, "."+sep)
+	path = strings.TrimPrefix(path, "." + sep)
 
 	for _, f := range files {
 		filePath := path + f.Name()
@@ -162,7 +161,7 @@ func sendGetForFileDownload(url string, allowRedirect bool, httpClientsDetails H
 	return resp, redirectUrl, err
 }
 
-func Stream(url string, httpClientsDetails HttpClientDetails) (*http.Response, []byte, string, error) {
+func Stream(url string, httpClientsDetails HttpClientDetails) (*http.Response,[]byte, string, error) {
 	return sendGetLeaveBodyOpen(url, true, httpClientsDetails)
 }
 
@@ -204,7 +203,7 @@ func getHttpClient(transport *http.Transport) *http.Client {
 }
 
 func Send(method string, url string, content []byte, allowRedirect bool,
-	closeBody bool, httpClientsDetails HttpClientDetails) (*http.Response, []byte, string, error) {
+closeBody bool, httpClientsDetails HttpClientDetails) (*http.Response, []byte, string, error) {
 
 	var req *http.Request
 	var err error
@@ -219,13 +218,13 @@ func Send(method string, url string, content []byte, allowRedirect bool,
 	return doRequest(req, allowRedirect, closeBody, httpClientsDetails)
 }
 
-func doRequest(req *http.Request, allowRedirect bool, closeBody bool, httpClientsDetails HttpClientDetails) (resp *http.Response, respBody []byte, redirectUrl string, err error) {
+func doRequest(req *http.Request, allowRedirect bool, closeBody bool, httpClientsDetails HttpClientDetails)  (resp *http.Response, respBody []byte, redirectUrl string, err error)  {
 	req.Close = true
 	setAuthentication(req, httpClientsDetails)
 	addUserAgentHeader(req)
 	copyHeaders(httpClientsDetails, req)
 
-	client := getHttpClient(httpClientsDetails.Transport)
+	client := getHttpClient(httpClientsDetails.Transport);
 	if !allowRedirect {
 		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
 			redirectUrl = req.URL.String()
@@ -300,7 +299,7 @@ func UploadFile(f *os.File, url string, httpClientsDetails HttpClientDetails) (*
 	setAuthentication(req, httpClientsDetails)
 	addUserAgentHeader(req)
 
-	client := getHttpClient(httpClientsDetails.Transport)
+	client := getHttpClient(httpClientsDetails.Transport);
 	resp, err := client.Do(req)
 	if cliutils.CheckError(err) != nil {
 		return nil, nil, err
@@ -332,7 +331,7 @@ func DownloadFileNoRedirect(downloadPath, localPath, fileName string, httpClient
 }
 
 func downloadFile(downloadPath, localPath, fileName string, allowRedirect bool,
-	httpClientsDetails HttpClientDetails) (resp *http.Response, redirectUrl string, err error) {
+httpClientsDetails HttpClientDetails) (resp *http.Response, redirectUrl string, err error) {
 
 	fileName, err = CreateFilePath(localPath, fileName)
 	if err != nil {
@@ -368,7 +367,7 @@ func DownloadFileConcurrently(flags ConcurrentDownloadFlags, logMsgPrefix string
 		wg.Add(1)
 		start := chunkSize * int64(i)
 		end := chunkSize * (int64(i) + 1)
-		if i == flags.SplitCount-1 {
+		if i == flags.SplitCount - 1 {
 			end += mod
 		}
 		requestClientDetails := httpClientsDetails.Clone()
@@ -418,7 +417,7 @@ func DownloadFileConcurrently(flags ConcurrentDownloadFlags, logMsgPrefix string
 }
 
 func downloadFileRange(flags ConcurrentDownloadFlags, start, end int64, currentSplit int, logMsgPrefix string,
-	httpClientsDetails HttpClientDetails) error {
+httpClientsDetails HttpClientDetails) error {
 
 	tempLoclPath, err := GetTempDirPath()
 	if err != nil {
@@ -430,17 +429,17 @@ func downloadFileRange(flags ConcurrentDownloadFlags, start, end int64, currentS
 	if httpClientsDetails.Headers == nil {
 		httpClientsDetails.Headers = make(map[string]string)
 	}
-	httpClientsDetails.Headers["Range"] = "bytes=" + strconv.FormatInt(start, 10) + "-" + strconv.FormatInt(end-1, 10)
+	httpClientsDetails.Headers["Range"] = "bytes=" + strconv.FormatInt(start, 10) + "-" + strconv.FormatInt(end - 1, 10)
 
 	resp, _, err :=
-		sendGetForFileDownload(flags.DownloadPath, false, httpClientsDetails)
+			sendGetForFileDownload(flags.DownloadPath, false, httpClientsDetails)
 	defer resp.Body.Close()
 	err = cliutils.CheckError(err)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(logMsgPrefix+"["+strconv.Itoa(currentSplit)+"]:", resp.Status+"...")
+	fmt.Println(logMsgPrefix + "[" + strconv.Itoa(currentSplit) + "]:", resp.Status + "...")
 	os.MkdirAll(tempLoclPath, 0777)
 	filePath := tempLoclPath + "/" + flags.FileName + "_" + strconv.Itoa(currentSplit)
 
@@ -642,7 +641,7 @@ func setAuthentication(req *http.Request, httpClientsDetails HttpClientDetails) 
 }
 
 func addUserAgentHeader(req *http.Request) {
-	req.Header.Set("User-Agent", cliutils.CliAgent+"/"+cliutils.GetVersion())
+	req.Header.Set("User-Agent", cliutils.CliAgent + "/" + cliutils.GetVersion())
 }
 
 func CalcSha1(filePath string) (string, error) {
@@ -724,3 +723,4 @@ type FileDetails struct {
 	Size         int64
 	AcceptRanges *types.BoolEnum
 }
+

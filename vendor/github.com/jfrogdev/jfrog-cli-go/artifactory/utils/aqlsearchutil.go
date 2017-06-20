@@ -1,14 +1,14 @@
 package utils
 
 import (
-	"encoding/json"
-	"errors"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
+	"encoding/json"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
-	"strconv"
+	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"strings"
+	"strconv"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
+	"errors"
 )
 
 func AqlSearchDefaultReturnFields(pattern string, recursive bool, props string, flags AqlSearchFlag) ([]AqlSearchResultItem, error) {

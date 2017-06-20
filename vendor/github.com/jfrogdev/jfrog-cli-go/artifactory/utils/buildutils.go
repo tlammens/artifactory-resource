@@ -1,16 +1,16 @@
 package utils
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
-	"io/ioutil"
-	"net/http"
+	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"os"
-	"strings"
+	"io/ioutil"
+	"bytes"
 	"time"
+	"strings"
+	"net/http"
 )
 
 const BUILD_INFO_DETAILS = "details"
@@ -137,7 +137,7 @@ func ReadBuildInfoGeneralDetails(buildName, buildNumber string) (*BuildGeneralDe
 }
 
 func PublishBuildInfo(url string, content []byte, httpClientsDetails ioutils.HttpClientDetails) (resp *http.Response, body []byte, err error) {
-	return ioutils.SendPut(url+"api/build/", content, httpClientsDetails)
+	return ioutils.SendPut(url + "api/build/", content, httpClientsDetails)
 }
 
 type BuildEnv map[string]string
@@ -160,7 +160,7 @@ type DependenciesBuildInfo struct {
 type BuildInfoAction string
 
 type ArtifactBuildInfoWrapper struct {
-	Artifacts    []ArtifactsBuildInfo    `json:"Artifacts,omitempty"`
+	Artifacts    []ArtifactsBuildInfo     `json:"Artifacts,omitempty"`
 	Dependencies []DependenciesBuildInfo `json:"Dependencies,omitempty"`
 	Env          BuildEnv                `json:"Env,omitempty"`
 	Timestamp    int64                   `json:"Timestamp,omitempty"`
@@ -177,7 +177,7 @@ func (wrapper BuildInfo) Len() int {
 }
 
 func (wrapper BuildInfo) Less(i, j int) bool {
-	return wrapper[i].Timestamp < wrapper[j].Timestamp
+	return wrapper[i].Timestamp < wrapper[j].Timestamp;
 }
 
 func (wrapper BuildInfo) Swap(i, j int) {

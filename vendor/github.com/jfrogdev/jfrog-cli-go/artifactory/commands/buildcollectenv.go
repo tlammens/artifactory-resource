@@ -22,7 +22,7 @@ func getEnvVariables() utils.BuildEnv {
 	for _, e := range os.Environ() {
 		pair := strings.Split(e, "=")
 		if len(pair[0]) != 0 {
-			m["buildInfo.env."+pair[0]] = pair[1]
+			m["buildInfo.env." + pair[0]] = pair[1]
 		}
 	}
 	return m

@@ -6,11 +6,11 @@ import (
 )
 
 type HttpClientDetails struct {
-	User      string
-	Password  string
-	ApiKey    string
-	Headers   map[string]string
-	Transport *http.Transport
+	User          string
+	Password      string
+	ApiKey        string
+	Headers       map[string]string
+	Transport     *http.Transport
 }
 
 func (httpClientDetails HttpClientDetails) Clone() *HttpClientDetails {

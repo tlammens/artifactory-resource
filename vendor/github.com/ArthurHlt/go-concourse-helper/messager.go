@@ -61,7 +61,8 @@ func (rl *Messager) FatalIf(doing string, err error) {
 }
 
 func (rl *Messager) Fatal(message string) {
-	fmt.Fprintln(rl.ResponseWriter, message)
+	fmt.Fprintln(rl.LogWriter, colorstring.Color("[red]"+ message +"[reset]"))
+	fmt.Fprintln(rl.ResponseWriter, colorstring.Color(message))
 	if rl.ExitOnFatal {
 		os.Exit(1)
 	}

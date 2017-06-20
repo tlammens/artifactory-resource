@@ -1,22 +1,21 @@
 package utils
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"errors"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
+	"crypto/x509"
+	"io/ioutil"
+	"errors"
 	"strings"
+	"crypto/tls"
 )
 
 const ARTIFACTORY_SYMLINK = "symlink.dest"
 const SYMLINK_SHA1 = "symlink.destsha1"
-
 func GetEncryptedPasswordFromArtifactory(artifactoryDetails *config.ArtifactoryDetails) (*http.Response, string, error) {
 	err := initTransport(artifactoryDetails)
 	if err != nil {
@@ -29,7 +28,7 @@ func GetEncryptedPasswordFromArtifactory(artifactoryDetails *config.ArtifactoryD
 }
 
 func UploadFile(f *os.File, url string, artifactoryDetails *config.ArtifactoryDetails,
-	details *ioutils.FileDetails, httpClientsDetails ioutils.HttpClientDetails) (*http.Response, []byte, error) {
+details *ioutils.FileDetails, httpClientsDetails ioutils.HttpClientDetails) (*http.Response, []byte, error) {
 	var err error
 	if details == nil {
 		details, err = ioutils.GetFileDetails(f.Name())
@@ -90,7 +89,7 @@ func getJfrogSecurityDir() (string, error) {
 	return confPath + "security/", nil
 }
 
-func initTransport(artDetails *config.ArtifactoryDetails) error {
+func initTransport(artDetails *config.ArtifactoryDetails) (error) {
 	// Remove once SystemCertPool supports windows
 	caCertPool, err := LoadSystemRoots()
 
@@ -104,7 +103,7 @@ func initTransport(artDetails *config.ArtifactoryDetails) error {
 	}
 	// Setup HTTPS client
 	tlsConfig := &tls.Config{
-		RootCAs:            caCertPool,
+		RootCAs: caCertPool,
 		ClientSessionCache: tls.NewLRUClientSessionCache(1)}
 	tlsConfig.BuildNameToCertificate()
 	artDetails.Transport = &http.Transport{TLSClientConfig: tlsConfig}
@@ -173,7 +172,7 @@ func EncodeParams(props string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		result = append(result, url.QueryEscape(key)+"="+url.QueryEscape(value))
+		result = append(result, url.QueryEscape(key) + "=" + url.QueryEscape(value))
 	}
 
 	return strings.Join(result, ";"), nil
@@ -195,10 +194,10 @@ type CommonFlag interface {
 
 func SplitProp(prop string) (string, string, error) {
 	splitIndex := strings.Index(prop, "=")
-	if splitIndex < 1 || len(prop[splitIndex+1:]) < 1 {
+	if splitIndex < 1 || len(prop[splitIndex + 1:]) < 1 {
 		err := cliutils.CheckError(errors.New("Invalid property: " + prop))
 		return "", "", err
 	}
-	return prop[:splitIndex], prop[splitIndex+1:], nil
+	return prop[:splitIndex], prop[splitIndex + 1:], nil
 
 }

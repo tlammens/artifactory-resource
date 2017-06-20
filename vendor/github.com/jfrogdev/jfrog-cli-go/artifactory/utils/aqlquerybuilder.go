@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"path/filepath"
 	"strings"
+	"path/filepath"
 )
 
 //Returns an AQL query string to search folders in Artifactory according to the pattern and return fields provided.
@@ -16,7 +16,7 @@ func BuildAqlFolderSearchQuery(searchPattern string, aqlReturnFields []string) (
 
 	for i := 0; i < size; i++ {
 		json += "{" + buildInnerQuery(pairs[i].path, pairs[i].file, "folder") + "}"
-		if i+1 < size {
+		if i + 1 < size {
 			json += ","
 		}
 	}
@@ -31,7 +31,7 @@ func BuildAqlSearchQuery(searchPattern string, recursive bool, props string, aql
 	index := strings.Index(searchPattern, "/")
 
 	repo := searchPattern[:index]
-	searchPattern = searchPattern[index+1:]
+	searchPattern = searchPattern[index + 1:]
 
 	pairs := createPathFilePairs(searchPattern, recursive)
 	size := len(pairs)
@@ -46,7 +46,7 @@ func BuildAqlSearchQuery(searchPattern string, recursive bool, props string, aql
 	} else {
 		for i := 0; i < size; i++ {
 			json += "{" + buildInnerQuery(pairs[i].path, pairs[i].file, "") + "}"
-			if i+1 < size {
+			if i + 1 < size {
 				json += ","
 			}
 		}
@@ -59,7 +59,7 @@ func BuildAqlSearchQuery(searchPattern string, recursive bool, props string, aql
 func buildAqlReturnFieldsString(returnFields []string) (fieldsString string) {
 	for i, value := range returnFields {
 		fieldsString += value
-		if i < len(returnFields)-1 {
+		if i < len(returnFields) - 1 {
 			fieldsString += ","
 		}
 	}
@@ -108,7 +108,7 @@ func buildInnerQuery(path, name, itemType string) string {
 	}
 
 	query := "\"$and\": [{\"path\": {\"$match\": \"" + path + "\"}," + nePath +
-		"\"name\": {\"$match\": \"" + name + "\"}" + itemTypeQuery + "}]"
+			"\"name\": {\"$match\": \"" + name + "\"}" + itemTypeQuery + "}]"
 
 	return query
 }
@@ -124,25 +124,25 @@ func buildInnerQuery(path, name, itemType string) string {
 // Each struct represent a possible path and folder name pair to be included in AQL query with an "or" relationship.
 func createPathFolderPairs(searchPattern string) []PathFilePair {
 	// Remove parenthesis
-	searchPattern = searchPattern[:len(searchPattern)-1]
+	searchPattern = searchPattern[:len(searchPattern) - 1]
 	searchPattern = strings.Replace(searchPattern, "(", "", -1)
 	searchPattern = strings.Replace(searchPattern, ")", "", -1)
 
 	index := strings.Index(searchPattern, "/")
-	searchPattern = searchPattern[index+1:]
+	searchPattern = searchPattern[index + 1:]
 
 	index = strings.LastIndex(searchPattern, "/")
 	lastSlashPath := searchPattern
 	path := "."
 	if index != -1 {
-		lastSlashPath = searchPattern[index+1:]
+		lastSlashPath = searchPattern[index + 1:]
 		path = searchPattern[:index]
 	}
 
-	pairs := []PathFilePair{{path: path, file: lastSlashPath}}
+	pairs := []PathFilePair{{path:path, file:lastSlashPath}}
 	for i := 0; i < len(lastSlashPath); i++ {
 		if string(lastSlashPath[i]) == "*" {
-			pairs = append(pairs, PathFilePair{path: filepath.Join(path, lastSlashPath[:i+1]), file: lastSlashPath[i:]})
+			pairs = append(pairs, PathFilePair{path:filepath.Join(path, lastSlashPath[:i + 1]), file:lastSlashPath[i:]})
 		}
 	}
 	return pairs
@@ -178,9 +178,10 @@ func createPathFilePairs(pattern string, recursive bool) []PathFilePair {
 		pairs = append(pairs, PathFilePair{".", pattern})
 		path = ""
 		name = pattern
-	} else if slashIndex >= 0 {
+	} else
+	if slashIndex >= 0 {
 		path = pattern[0:slashIndex]
-		name = pattern[slashIndex+1:]
+		name = pattern[slashIndex + 1:]
 		pairs = append(pairs, PathFilePair{path, name})
 	}
 	if !recursive {
@@ -197,8 +198,8 @@ func createPathFilePairs(pattern string, recursive bool) []PathFilePair {
 	size := len(sections)
 	for i := 0; i < size; i++ {
 		options := []string{}
-		if i+1 < size {
-			options = append(options, sections[i]+"*/")
+		if i + 1 < size {
+			options = append(options, sections[i] + "*/")
 		}
 		for _, option := range options {
 			str := ""

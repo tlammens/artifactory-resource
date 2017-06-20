@@ -7,10 +7,10 @@ import (
 
 func BuildClean(buildName, buildNumber string) (err error) {
 	log.Info("Cleanning build info...")
-	err = utils.RemoveBuildDir(buildName, buildNumber)
+	err = utils.RemoveBuildDir(buildName, buildNumber);
 	if err != nil {
 		return
 	}
-	log.Info("Cleaned build info", buildName, "#"+buildNumber+".")
+	log.Info("Cleaned build info", buildName, "#" + buildNumber + ".")
 	return err
 }

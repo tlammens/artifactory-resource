@@ -2,14 +2,14 @@ package cliutils
 
 import (
 	"bytes"
-	"encoding/json"
 	"github.com/codegangsta/cli"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
+	"encoding/json"
 	"os"
-	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
+	"runtime"
+	"regexp"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 )
 
 const CliAgent = "jfrog-cli-go"
@@ -24,7 +24,7 @@ const CmdXray = "xr"
 type OnError string
 
 const (
-	OnErrorPanic       OnError = "panic"
+	OnErrorPanic OnError = "panic"
 	OnErrorReturnError OnError = "return"
 )
 
@@ -117,7 +117,7 @@ func BuildListString(listStr string) string {
 	str := "[\""
 	for i := 0; i < size; i++ {
 		str += split[i]
-		if i+1 < size {
+		if i + 1 < size {
 			str += "\",\""
 		}
 	}
@@ -263,7 +263,7 @@ func GetBoolEnvValue(flagName string, defValue bool) (bool, error) {
 		return defValue, nil
 	}
 	val, err := strconv.ParseBool(envVarValue)
-	err = CheckErrorWithMessage(err, "can't parse environment variable "+flagName)
+	err = CheckErrorWithMessage(err, "can't parse environment variable " + flagName)
 	return val, err
 }
 
@@ -309,7 +309,7 @@ func ReformatRegexp(regexpString, sourceString, destString string) (string, erro
 	if size > 0 {
 		for i := 1; i < size; i++ {
 			group := strings.Replace(groups[i], "\\", "/", -1)
-			target = strings.Replace(target, "{"+strconv.Itoa(i)+"}", group, -1)
+			target = strings.Replace(target, "{" + strconv.Itoa(i) + "}", group, -1)
 		}
 	}
 	return target, nil
@@ -365,3 +365,4 @@ type Artifact struct {
 	TargetPath string
 	Symlink    string
 }
+

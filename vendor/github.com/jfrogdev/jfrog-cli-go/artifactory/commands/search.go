@@ -2,9 +2,9 @@ package commands
 
 import (
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
+	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 )
 
 type SearchResult struct {
@@ -55,9 +55,9 @@ func aqlResultToSearchResult(aqlResult []utils.AqlSearchResultItem) (result []Se
 	for i, v := range aqlResult {
 		tempResult := new(SearchResult)
 		if v.Path != "." {
-			tempResult.Path = v.Repo + "/" + v.Path + "/" + v.Name
+			tempResult.Path = v.Repo + "/" + v.Path + "/" + v.Name;
 		} else {
-			tempResult.Path = v.Repo + "/" + v.Name
+			tempResult.Path = v.Repo + "/" + v.Name;
 		}
 		result[i] = *tempResult
 	}

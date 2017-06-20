@@ -1,10 +1,10 @@
 package cliutils
 
 import (
-	"fmt"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
-	"sync"
 	"time"
+	"fmt"
+	"sync"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 )
 
 type Spinner struct {

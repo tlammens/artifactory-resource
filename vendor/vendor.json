@@ -3,10 +3,10 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "cQmLPDb7Rgr/RPwxk0Ip8KwKn44=",
+			"checksumSHA1": "mYkMsHQrHh0w5IfAT6x2dTnOIF8=",
 			"path": "github.com/ArthurHlt/go-concourse-helper",
-			"revision": "c718d248f3edc9eff7261c75a4d2c4406aec2578",
-			"revisionTime": "2017-03-23T01:28:53Z"
+			"revision": "e64471d7c7ec3abbe358b00268d4c031194c98bf",
+			"revisionTime": "2017-06-20T09:29:18Z"
 		},
 		{
 			"checksumSHA1": "gntLgvUzJqZWf4NYxJr3p/3gcvk=",

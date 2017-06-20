@@ -1,15 +1,15 @@
 package commands
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
+	"sort"
+	"fmt"
+	"strings"
+	"encoding/json"
+	"path/filepath"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
-	"path/filepath"
-	"sort"
-	"strings"
+	"errors"
 )
 
 func BuildPublish(buildName, buildNumber string, flags *utils.BuildInfoFlags) error {
@@ -132,7 +132,7 @@ type CliAgent struct {
 type Modules struct {
 	Properties   map[string][]string           `json:"properties,omitempty"`
 	Id           string                        `json:"id,omitempty"`
-	Artifacts    []utils.ArtifactsBuildInfo    `json:"artifacts,omitempty"`
+	Artifacts    []utils.ArtifactsBuildInfo     `json:"artifacts,omitempty"`
 	Dependencies []utils.DependenciesBuildInfo `json:"dependencies,omitempty"`
 }
 

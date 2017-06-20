@@ -1,14 +1,14 @@
 package commands
 
 import (
-	"encoding/json"
-	"errors"
-	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
+	"encoding/json"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
+	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
 	"path"
+	"errors"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 )
 
 func BuildPromote(buildName, buildNumber, targetRepo string, flags *BuildPromotionFlags) error {
@@ -31,13 +31,13 @@ func BuildPromote(buildName, buildNumber, targetRepo string, flags *BuildPromoti
 	}
 
 	data := BuildPromotionConfig{
-		Status:              flags.Status,
-		Comment:             flags.Comment,
-		Copy:                flags.Copy,
-		IncludeDependencies: flags.IncludeDependencies,
-		SourceRepo:          flags.SourceRepo,
-		TargetRepo:          targetRepo,
-		DryRun:              flags.DryRun}
+		Status:                 flags.Status,
+		Comment :               flags.Comment,
+		Copy:                   flags.Copy,
+		IncludeDependencies:    flags.IncludeDependencies,
+		SourceRepo:             flags.SourceRepo,
+		TargetRepo:             targetRepo,
+		DryRun:                 flags.DryRun}
 	requestContent, err := json.Marshal(data)
 	if err != nil {
 		return cliutils.CheckError(errors.New("Failed to execute request. " + cliutils.GetDocumentationMessage()))
@@ -56,7 +56,7 @@ func BuildPromote(buildName, buildNumber, targetRepo string, flags *BuildPromoti
 	}
 
 	log.Debug("Artifactory response:", resp.Status)
-	log.Info("Promoted build", buildName, "#"+buildNumber, "to:", targetRepo, "repository.")
+	log.Info("Promoted build", buildName , "#" + buildNumber, "to:", targetRepo, "repository.")
 	return nil
 }
 

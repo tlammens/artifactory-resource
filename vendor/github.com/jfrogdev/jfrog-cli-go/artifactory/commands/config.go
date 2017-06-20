@@ -1,58 +1,58 @@
 package commands
 
 import (
-	"errors"
 	"fmt"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
 	"strings"
+	"errors"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 )
 
 func Config(details, defaultDetails *config.ArtifactoryDetails, interactive,
-	shouldEncPassword bool) (*config.ArtifactoryDetails, error) {
+    shouldEncPassword bool) (*config.ArtifactoryDetails, error) {
 
-	if details == nil {
-		details = new(config.ArtifactoryDetails)
-	}
-	var err error
+    if details == nil {
+        details = new(config.ArtifactoryDetails)
+    }
+    var err error
 	if interactive {
-		if defaultDetails == nil {
-			defaultDetails, err = config.ReadArtifactoryConf()
-			if err != nil {
-				return nil, err
-			}
-		}
+	    if defaultDetails == nil {
+            defaultDetails, err = config.ReadArtifactoryConf()
+            if err != nil {
+                return nil, err
+            }
+	    }
 		if details.Url == "" {
 			ioutils.ScanFromConsole("Artifactory URL", &details.Url, defaultDetails.Url)
 		}
 		if strings.Index(details.Url, "ssh://") == 0 || strings.Index(details.Url, "SSH://") == 0 {
 			err = readSshKeyPathFromConsole(details, defaultDetails)
-			if err != nil {
-				return nil, err
-			}
+            if err != nil {
+                return nil, err
+            }
 		} else {
-			if details.ApiKey == "" && details.Password == "" {
-				ioutils.ScanFromConsole("API key (leave empty for basic authentication)", &details.ApiKey, "")
-			}
+		    if details.ApiKey == "" && details.Password == "" {
+		        ioutils.ScanFromConsole("API key (leave empty for basic authentication)", &details.ApiKey, "")
+		    }
 			if details.ApiKey == "" {
 				ioutils.ReadCredentialsFromConsole(details, defaultDetails)
 			}
 		}
 	}
 	err = checkSingleAuthMethod(details)
-	if err != nil {
-		return nil, err
-	}
+    if err != nil {
+        return nil, err
+    }
 
 	details.Url = cliutils.AddTrailingSlashIfNeeded(details.Url)
 	if shouldEncPassword {
 		details, err = encryptPassword(details)
-		if err != nil {
-			return nil, err
-		}
+        if err != nil {
+            return nil, err
+        }
 	}
 	err = config.SaveArtifactoryConf(details)
 	return details, err
@@ -66,7 +66,7 @@ func readSshKeyPathFromConsole(details, savedDetails *config.ArtifactoryDetails)
 	details.SshKeyPath = cliutils.ReplaceTildeWithUserHome(details.SshKeyPath)
 	exists, err := ioutils.IsFileExists(details.SshKeyPath)
 	if err != nil {
-		return err
+	    return err
 	}
 	if !exists {
 		log.Warn("Could not find SSH key file at:", details.SshKeyPath)
@@ -77,7 +77,7 @@ func readSshKeyPathFromConsole(details, savedDetails *config.ArtifactoryDetails)
 func ShowConfig() error {
 	details, err := config.ReadArtifactoryConf()
 	if err != nil {
-		return err
+	    return err
 	}
 	if details.Url != "" {
 		fmt.Println("Url: " + details.Url)
@@ -115,29 +115,29 @@ func encryptPassword(details *config.ArtifactoryDetails) (*config.ArtifactoryDet
 		return nil, err
 	}
 	switch response.StatusCode {
-	case 409:
-		message := "\nYour Artifactory server is not configured to encrypt passwords.\n" +
-			"You may use \"art config --enc-password=false\""
-		err = cliutils.CheckError(errors.New(message))
-	case 200:
-		details.Password = encPassword
-		log.Info("Done encrypting password.")
-	default:
-		err = cliutils.CheckError(errors.New("\nArtifactory response: " + response.Status))
+        case 409:
+            message := "\nYour Artifactory server is not configured to encrypt passwords.\n" +
+                "You may use \"art config --enc-password=false\""
+            err = cliutils.CheckError(errors.New(message))
+        case 200:
+            details.Password = encPassword
+            log.Info("Done encrypting password.")
+        default:
+            err = cliutils.CheckError(errors.New("\nArtifactory response: " + response.Status))
 	}
 	return details, err
 }
 
 func checkSingleAuthMethod(details *config.ArtifactoryDetails) (err error) {
 	boolArr := []bool{details.User != "" && details.Password != "", details.ApiKey != "", details.SshKeyPath != ""}
-	if cliutils.SumTrueValues(boolArr) > 1 {
+	if (cliutils.SumTrueValues(boolArr) > 1) {
 		err = cliutils.CheckError(errors.New("Only one authentication method is allowd: Username/Password, API key or RSA tokens."))
 	}
 	return
 }
 
 type ConfigFlags struct {
-	ArtDetails  *config.ArtifactoryDetails
-	Interactive bool
-	EncPassword bool
+	ArtDetails   *config.ArtifactoryDetails
+	Interactive  bool
+	EncPassword  bool
 }

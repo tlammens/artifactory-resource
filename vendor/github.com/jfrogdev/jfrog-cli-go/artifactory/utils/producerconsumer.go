@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"errors"
 	"sync"
+	"errors"
 )
 
 type ErrorHandler func(error)
@@ -41,23 +41,23 @@ func NewProducerConsumer(numOfConsumers int, isFailFast bool) *ProducerConsumer 
 		consumers = 1
 	}
 	return &ProducerConsumer{
-		tasks:          make(chan TaskWrapper),
-		cancel:         make(chan struct{}),
+		tasks: make(chan TaskWrapper),
+		cancel: make(chan struct{}),
 		numOfConsumers: consumers,
-		failFast:       isFailFast,
+		failFast: isFailFast,
 	}
 }
 
 // Add a task to the producer channel, in case of cancellation event (caused by @StopProducer()) will return non nil error.
 func (pc *ProducerConsumer) AddTask(t Task) error {
-	taskWrapper := TaskWrapper{task: t, onError: func(err error) {}}
+	taskWrapper := TaskWrapper{task:t, onError:func(err error) {}}
 	return pc.sendNewTask(taskWrapper)
 }
 
 // t - the actual task which will be performed by the consumer.
 // errorHandler - execute on the returned error while running t
 func (pc *ProducerConsumer) AddTaskWithError(t Task, errorHandler ErrorHandler) error {
-	taskWrapper := TaskWrapper{task: t, onError: errorHandler}
+	taskWrapper := TaskWrapper{task:t, onError:errorHandler}
 	return pc.sendNewTask(taskWrapper)
 }
 
@@ -102,7 +102,7 @@ func (pc *ProducerConsumer) Run() {
 	wg.Wait()
 }
 
-func (pc *ProducerConsumer) getTasks() <-chan TaskWrapper {
+func (pc *ProducerConsumer) getTasks() <- chan TaskWrapper {
 	return pc.tasks
 }
 

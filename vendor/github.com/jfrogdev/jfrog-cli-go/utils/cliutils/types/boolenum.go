@@ -17,10 +17,16 @@ func CreateBoolEnum() *BoolEnum {
 	return new(BoolEnum)
 }
 
-func (b *BoolEnum) SetValue(val bool) {
+func(b *BoolEnum) SetValue(val bool) {
 	b.boolean = booleanEnum(cliutils.Bool2Int(val))
 }
 
 func (b *BoolEnum) GetValue() bool {
 	return b.boolean == True
 }
+
+
+
+
+
+

@@ -3,43 +3,43 @@ package config
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"errors"
+	"os"
+	"net/http"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
-	"io/ioutil"
-	"net/http"
-	"os"
 )
 
 func IsArtifactoryConfExists() (bool, error) {
-	conf, err := readConf()
-	if err != nil {
-		return false, err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return false, err
+    }
 	return conf.Artifactory != nil, nil
 }
 
 func IsMissionControlConfExists() (bool, error) {
-	conf, err := readConf()
-	if err != nil {
-		return false, err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return false, err
+    }
 	return conf.MissionControl != nil, nil
 }
 
 func IsBintrayConfExists() (bool, error) {
-	conf, err := readConf()
-	if err != nil {
-		return false, err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return false, err
+    }
 	return conf.Bintray != nil, nil
 }
 
 func ReadArtifactoryConf() (*ArtifactoryDetails, error) {
-	conf, err := readConf()
-	if err != nil {
-		return nil, err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return nil, err
+    }
 	details := conf.Artifactory
 	if details == nil {
 		return new(ArtifactoryDetails), nil
@@ -48,10 +48,10 @@ func ReadArtifactoryConf() (*ArtifactoryDetails, error) {
 }
 
 func ReadMissionControlConf() (*MissionControlDetails, error) {
-	conf, err := readConf()
-	if err != nil {
-		return nil, err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return nil, err
+    }
 	details := conf.MissionControl
 	if details == nil {
 		return new(MissionControlDetails), nil
@@ -60,10 +60,10 @@ func ReadMissionControlConf() (*MissionControlDetails, error) {
 }
 
 func ReadBintrayConf() (*BintrayDetails, error) {
-	conf, err := readConf()
-	if err != nil {
-		return nil, err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return nil, err
+    }
 	details := conf.Bintray
 	if details == nil {
 		return new(BintrayDetails), nil
@@ -72,28 +72,28 @@ func ReadBintrayConf() (*BintrayDetails, error) {
 }
 
 func SaveArtifactoryConf(details *ArtifactoryDetails) error {
-	conf, err := readConf()
-	if err != nil {
-		return err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return err
+    }
 	conf.Artifactory = details
 	return saveConfig(conf)
 }
 
 func SaveMissionControlConf(details *MissionControlDetails) error {
-	conf, err := readConf()
-	if err != nil {
-		return err
-	}
+    conf, err := readConf()
+    if err != nil {
+        return err
+    }
 	conf.MissionControl = details
 	return saveConfig(conf)
 }
 
 func SaveBintrayConf(details *BintrayDetails) error {
 	config, err := readConf()
-	if err != nil {
-		return err
-	}
+    if err != nil {
+        return err
+    }
 	config.Bintray = details
 	return saveConfig(config)
 }
@@ -102,34 +102,34 @@ func saveConfig(config *Config) error {
 	b, err := json.Marshal(&config)
 	err = cliutils.CheckError(err)
 	if err != nil {
-		return err
+	    return err
 	}
 	var content bytes.Buffer
 	err = json.Indent(&content, b, "", "  ")
 	err = cliutils.CheckError(err)
 	if err != nil {
-		return err
+	    return err
 	}
 	path, err := getConFilePath()
 	if err != nil {
-		return err
+	    return err
 	}
 	var exists bool
 	exists, err = ioutils.IsFileExists(path)
 	if err != nil {
-		return err
+	    return err
 	}
 	if exists {
 		err := os.Remove(path)
 		err = cliutils.CheckError(err)
-		if err != nil {
-			return err
-		}
+        if err != nil {
+            return err
+        }
 	}
 	path, err = getConFilePath()
-	if err != nil {
-		return err
-	}
+    if err != nil {
+        return err
+    }
 	ioutil.WriteFile(path, []byte(content.String()), 0600)
 	return nil
 }
@@ -137,19 +137,19 @@ func saveConfig(config *Config) error {
 func readConf() (*Config, error) {
 	confFilePath, err := getConFilePath()
 	if err != nil {
-		return nil, err
+	    return nil, err
 	}
 	config := new(Config)
 	exists, err := ioutils.IsFileExists(confFilePath)
 	if err != nil {
-		return nil, err
+	    return nil, err
 	}
 	if !exists {
 		return config, nil
 	}
 	content, err := ioutils.ReadFile(confFilePath)
 	if err != nil {
-		return nil, err
+	    return nil, err
 	}
 	json.Unmarshal(content, &config)
 
@@ -160,18 +160,18 @@ func GetJfrogHomeDir() (string, error) {
 	userDir := ioutils.GetHomeDir()
 	if userDir == "" {
 		err := cliutils.CheckError(errors.New("Couldn't find home directory. Make sure your HOME environment variable is set."))
-		if err != nil {
-			return "", err
-		}
+        if err != nil {
+            return "", err
+        }
 	}
 	return userDir + "/.jfrog/", nil
 }
 
 func getConFilePath() (string, error) {
 	confPath, err := GetJfrogHomeDir()
-	if err != nil {
-		return "", err
-	}
+    if err != nil {
+        return "", err
+    }
 	os.MkdirAll(confPath, 0777)
 	return confPath + "jfrog-cli.conf", nil
 }

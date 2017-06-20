@@ -1,17 +1,17 @@
 package commands
 
 import (
-	"errors"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/types"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
-	"os"
+	"strconv"
+	"errors"
+	"github.com/jfrogdev/jfrog-cli-go/utils/config"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 	"path"
 	"path/filepath"
-	"strconv"
+	"os"
 )
 
 func Download(downloadSpec *utils.SpecFiles, flags *DownloadFlags) (err error) {
@@ -20,7 +20,7 @@ func Download(downloadSpec *utils.SpecFiles, flags *DownloadFlags) (err error) {
 		return
 	}
 
-	isCollectBuildInfo := len(flags.BuildName) > 0 && len(flags.BuildNumber) > 0
+	isCollectBuildInfo := len(flags.BuildName) > 0  && len(flags.BuildNumber) > 0
 	if isCollectBuildInfo && !flags.DryRun {
 		if err = utils.SaveBuildGeneralDetails(flags.BuildName, flags.BuildNumber); err != nil {
 			return
@@ -77,7 +77,7 @@ func prepareTasks(producer utils.Producer, downloadSpec *utils.SpecFiles, fileCo
 				return
 			}
 
-			err = produceTasks(resultItems, fileSpec, producer, fileContextHandler, errorsQueue)
+			err =  produceTasks(resultItems, fileSpec, producer, fileContextHandler, errorsQueue)
 			if err != nil {
 				errorsQueue.AddError(err)
 				return
@@ -109,10 +109,10 @@ func produceTasks(items []utils.AqlSearchResultItem, fileSpec *utils.Files, prod
 	}
 	for _, v := range items {
 		tempData := DownloadData{
-			Dependency:   v,
+			Dependency: v,
 			DownloadPath: fileSpec.Pattern,
-			Target:       fileSpec.Target,
-			Flat:         flat,
+			Target: fileSpec.Target,
+			Flat: flat,
 		}
 		producer.AddTaskWithError(fileHandler(tempData), errorsQueue.AddError)
 	}
@@ -137,20 +137,20 @@ func logDownloadTotals(buildDependencies [][]utils.DependenciesBuildInfo) {
 func createBuildDependencyItem(resultItem utils.AqlSearchResultItem) utils.DependenciesBuildInfo {
 	return utils.DependenciesBuildInfo{
 		Id: resultItem.Name,
-		BuildInfoCommon: &utils.BuildInfoCommon{
+		BuildInfoCommon : &utils.BuildInfoCommon{
 			Sha1: resultItem.Actual_Sha1,
-			Md5:  resultItem.Actual_Md5,
+			Md5: resultItem.Actual_Md5,
 		},
 	}
 }
 
 func createDownloadFileDetails(downloadPath, localPath, localFileName string, acceptRanges *types.BoolEnum, size int64) (details *DownloadFileDetails) {
 	details = &DownloadFileDetails{
-		DownloadPath:  downloadPath,
-		LocalPath:     localPath,
+		DownloadPath: downloadPath,
+		LocalPath: localPath,
 		LocalFileName: localFileName,
-		AcceptRanges:  acceptRanges,
-		Size:          size}
+		AcceptRanges: acceptRanges,
+		Size: size}
 	return
 }
 
@@ -168,7 +168,7 @@ func getFileRemoteDetails(downloadPath string, flags *DownloadFlags) (*ioutils.F
 
 func downloadFile(downloadFileDetails *DownloadFileDetails, logMsgPrefix string, flags *DownloadFlags) error {
 	httpClientsDetails := utils.GetArtifactoryHttpClientDetails(flags.ArtDetails)
-	bulkDownload := flags.SplitCount == 0 || flags.MinSplitSize < 0 || flags.MinSplitSize*1000 > downloadFileDetails.Size
+	bulkDownload := flags.SplitCount == 0 || flags.MinSplitSize < 0 || flags.MinSplitSize * 1000 > downloadFileDetails.Size
 	if !bulkDownload {
 		acceptRange, err := isFileAcceptRange(downloadFileDetails, flags)
 		if err != nil {
@@ -288,7 +288,6 @@ func getArtifactSymlinkChecksum(properties []utils.Property) string {
 }
 
 type fileHandlerFunc func(DownloadData) utils.Task
-
 func createFileHandlerFunc(buildDependencies [][]utils.DependenciesBuildInfo, flags *DownloadFlags) fileHandlerFunc {
 	return func(downloadData DownloadData) utils.Task {
 		return func(threadId int) error {
@@ -297,7 +296,7 @@ func createFileHandlerFunc(buildDependencies [][]utils.DependenciesBuildInfo, fl
 			if e != nil {
 				return e
 			}
-			log.Info(logMsgPrefix+"Downloading", downloadData.Dependency.GetFullUrl())
+			log.Info(logMsgPrefix + "Downloading", downloadData.Dependency.GetFullUrl())
 			if flags.DryRun {
 				return nil
 			}

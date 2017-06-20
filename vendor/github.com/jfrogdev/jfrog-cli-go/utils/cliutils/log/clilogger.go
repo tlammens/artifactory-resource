@@ -1,11 +1,11 @@
 package log
 
 import (
-	"log"
 	"os"
+	"log"
 )
 
-var LogLevel = map[string]int{"ERROR": 0, "WARN": 1, "INFO": 2, "DEBUG": 3}
+var LogLevel = map[string]int{"ERROR": 0, "WARN":  1, "INFO":  2, "DEBUG": 3, }
 var logger Log
 
 func init() {
@@ -29,7 +29,7 @@ func createLogger() (logger *CliLogger) {
 func (logger *CliLogger) setLevel() {
 	logger.LogLevel = LogLevel["INFO"]
 	if val, ok := LogLevel[os.Getenv("JFROG_CLI_LOG_LEVEL")]; ok {
-		logger.LogLevel = val
+		logger.LogLevel = val;
 	}
 
 	logger.DebugLog = log.New(os.Stdout, "[Debug] ", 0)
@@ -97,3 +97,4 @@ type Log interface {
 	Warn(a ...interface{})
 	Error(a ...interface{})
 }
+

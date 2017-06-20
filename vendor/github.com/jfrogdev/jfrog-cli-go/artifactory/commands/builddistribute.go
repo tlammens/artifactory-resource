@@ -1,14 +1,14 @@
 package commands
 
 import (
-	"encoding/json"
-	"errors"
-	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
+	"encoding/json"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
+	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
 	"path"
+	"errors"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
 	"strings"
 )
 
@@ -33,13 +33,13 @@ func BuildDistribute(buildName, buildNumber, targetRepo string, flags *BuildDist
 	}
 
 	data := BuildDistributionConfig{
-		SourceRepos:           strings.Split(flags.SourceRepos, ","),
-		TargetRepo:            targetRepo,
-		Publish:               flags.Publish,
-		OverrideExistingFiles: flags.OverrideExistingFiles,
-		GpgPassphrase:         flags.GpgPassphrase,
-		Async:                 flags.Async,
-		DryRun:                flags.DryRun}
+		SourceRepos:             strings.Split(flags.SourceRepos, ","),
+		TargetRepo:             targetRepo,
+		Publish:                flags.Publish,
+		OverrideExistingFiles:  flags.OverrideExistingFiles,
+		GpgPassphrase:          flags.GpgPassphrase,
+		Async:                  flags.Async,
+		DryRun:                 flags.DryRun}
 	requestContent, err := json.Marshal(data)
 	if err != nil {
 		return cliutils.CheckError(errors.New("Failed to execute request. " + cliutils.GetDocumentationMessage()))
@@ -58,11 +58,11 @@ func BuildDistribute(buildName, buildNumber, targetRepo string, flags *BuildDist
 
 	log.Debug("Artifactory response:", resp.Status)
 	if flags.Async && !flags.DryRun {
-		log.Info("Asynchronously distributed build", buildName, "#"+buildNumber, "to:", targetRepo, "repository, logs are avalable in Artifactory.")
+		log.Info("Asynchronously distributed build", buildName, "#" + buildNumber, "to:", targetRepo, "repository, logs are avalable in Artifactory.")
 		return nil
 	}
 
-	log.Info(dryRun+"Distributed build", buildName, "#"+buildNumber, "to:", targetRepo, "repository.")
+	log.Info(dryRun + "Distributed build", buildName, "#" + buildNumber, "to:", targetRepo, "repository.")
 	return nil
 }
 
@@ -77,13 +77,13 @@ type BuildDistributionFlags struct {
 }
 
 type BuildDistributionConfig struct {
-	SourceRepos           []string `json:"sourceRepos,omitempty"`
-	TargetRepo            string   `json:"targetRepo,omitempty"`
-	GpgPassphrase         string   `json:"gpgPassphrase,omitempty"`
-	Publish               bool     `json:"publish"`
-	OverrideExistingFiles bool     `json:"overrideExistingFiles,omitempty"`
-	Async                 bool     `json:"async,omitempty"`
-	DryRun                bool     `json:"dryRun,omitempty"`
+	SourceRepos           []string  `json:"sourceRepos,omitempty"`
+	TargetRepo            string    `json:"targetRepo,omitempty"`
+	GpgPassphrase         string    `json:"gpgPassphrase,omitempty"`
+	Publish               bool      `json:"publish"`
+	OverrideExistingFiles bool      `json:"overrideExistingFiles,omitempty"`
+	Async                 bool      `json:"async,omitempty"`
+	DryRun                bool      `json:"dryRun,omitempty"`
 }
 
 func (flags *BuildDistributionFlags) GetArtifactoryDetails() *config.ArtifactoryDetails {

@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"errors"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
-	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
-	"strconv"
 	"strings"
+	"strconv"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
+	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
+	"github.com/jfrogdev/jfrog-cli-go/utils/config"
+	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
+	"errors"
 )
 
 const (
@@ -43,7 +43,7 @@ func MoveFilesWrapper(moveSpec *SpecFiles, flags *MoveFlags, moveType MoveType) 
 
 	log.Info(moveMsgs[moveType].MovedMsg, strconv.Itoa(successCount), "artifacts.")
 	if failedCount > 0 {
-		err = cliutils.CheckError(errors.New("Failed " + moveMsgs[moveType].MovingMsg + " " + strconv.Itoa(failedCount) + " artifacts."))
+		err = cliutils.CheckError(errors.New("Failed " + moveMsgs[moveType].MovingMsg + " " +strconv.Itoa(failedCount) + " artifacts."))
 	}
 
 	return

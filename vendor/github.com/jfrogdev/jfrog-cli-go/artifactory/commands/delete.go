@@ -1,13 +1,13 @@
 package commands
 
 import (
-	"errors"
 	"github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
+	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
+	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils"
 	"github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
-	"github.com/jfrogdev/jfrog-cli-go/utils/ioutils"
 	"strings"
+	"errors"
 )
 
 func Delete(deleteSpec *utils.SpecFiles, flags *DeleteFlags) (err error) {
@@ -41,7 +41,7 @@ func GetPathsToDelete(deleteSpec *utils.SpecFiles, flags *DeleteFlags) (resultIt
 		}
 		// Simple directory delete, no need to search in Artifactory.
 		if simpleDir, e := isSimpleDirectoryDelete(deleteSpec.Get(i)); simpleDir && e == nil {
-			simplePathItem := utils.AqlSearchResultItem{Path: deleteSpec.Get(i).Pattern}
+			simplePathItem := utils.AqlSearchResultItem{Path:deleteSpec.Get(i).Pattern}
 			resultItems = append(resultItems, []utils.AqlSearchResultItem{simplePathItem}...)
 			continue
 		} else if e != nil {
@@ -123,7 +123,7 @@ func reduceDirResult(foldersToDelete []utils.AqlSearchResultItem) []utils.AqlSea
 	for k := range paths {
 		for k2 := range paths {
 			if k != k2 && strings.HasPrefix(k, k2) {
-				delete(paths, k)
+				delete(paths, k);
 				continue
 			}
 		}
