@@ -142,10 +142,14 @@ func (c In) DownloadProperties() error {
 		msg.Fatal(fmt.Sprintf("\nCouldn't get properties info. Response code: %d", resp.StatusCode))
 	}
 
-	basepath := path.Dir(c.params.PropsFilename)
+	propsfilePath := path.Dir(c.params.PropsFilename)
+	basepath := utils.AddTrailingSlashIfNeeded(c.cmd.DestinationFolder())
+	if propsfilePath != "." {
+		basepath += propsfilePath
+	}
 	err = os.MkdirAll(basepath, 0777)
 	msg.FatalIf(fmt.Sprintf("\nCouldn't create folder: %s", basepath), err)
-	out, err := os.Create(c.params.PropsFilename)
+	out, err := os.Create(utils.AddTrailingSlashIfNeeded(basepath) + path.Base(c.params.PropsFilename))
 	msg.FatalIf("Couldn't create properties file", err)
 	defer out.Close()
 
