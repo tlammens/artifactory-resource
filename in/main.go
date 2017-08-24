@@ -43,7 +43,7 @@ func (c *In) Run() {
 	err = cmd.Params(&c.params)
 	msg.FatalIf("Error when parsing params from concourse", err)
 	c.defaultingParams()
-	err = utils.CheckReqParamsWithPattern(c.source)
+	err = utils.CheckReqParams(c.source)
 	if err != nil {
 		msg.Fatal(err.Error())
 	}
