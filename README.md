@@ -12,7 +12,7 @@ A concourse resource for push and download files from/to artifactory with semver
 
 * `ssh_key`: *Optional.* Artifactory ssh key.
 
-* `pattern`: *Required.* Pattern to use to find file (you can use glob format or regex if `regexp` set to `true`).
+* `pattern`: *Required for in.* Pattern to use to find file (you can use glob format or regex if `regexp` set to `true`).
 
 * `props`: *Optional.* List of properties in the form of "key1=value1;key2=value2,..." Only artifacts with these properties will be downloaded.
 
