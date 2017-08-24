@@ -17,16 +17,22 @@ const (
 	ART_SECURITY_FOLDER = "security/"
 )
 
-func RetrieveArtDetails(source model.Source) (*config.ArtifactoryDetails, error) {
+func CheckReqParamsWithPattern(source model.Source) error {
+	if source.Pattern == "" {
+		return errors.New("You must provide a pattern for your file (e.g.: 'local_generic/myfile.txt','local_generic/my*.txt'.")
+	}
+	return CheckReqParams(source)
+}
+func CheckReqParams(source model.Source) error {
 	if source.Url == "" {
-		return nil, errors.New("You must pass an url to artifactory.")
+		return errors.New("You must pass an url to artifactory.")
 	}
 	if source.User == "" && source.ApiKey == "" {
-		return nil, errors.New("You must pass user/password pair or apiKey to authnticate over artifactory.")
+		return errors.New("You must pass user/password pair or apiKey to authnticate over artifactory.")
 	}
-	if source.Pattern == "" {
-		return nil, errors.New("You must provide a pattern for your file (e.g.: 'local_generic/myfile.txt','local_generic/my*.txt'.")
-	}
+	return nil
+}
+func RetrieveArtDetails(source model.Source) (*config.ArtifactoryDetails, error) {
 	err := createCert(source.CACert)
 	if err != nil {
 		return nil, err

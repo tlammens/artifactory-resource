@@ -46,7 +46,10 @@ func (c *Check) Run() {
 	msg.FatalIf("Error when parsing source from concourse", err)
 
 	utils.OverrideLoggerArtifactory(c.source.LogLevel)
-
+	err = utils.CheckReqParamsWithPattern(c.source)
+	if err != nil {
+		msg.Fatal(err.Error())
+	}
 	c.artdetails, err = utils.RetrieveArtDetails(c.source)
 	if err != nil {
 		msg.Fatal(err.Error())

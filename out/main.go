@@ -44,6 +44,10 @@ func (c *Out) Run() {
 
 	c.defaultingParams()
 
+	err = utils.CheckReqParams(c.source)
+	if err != nil {
+		msg.Fatal(err.Error())
+	}
 	c.artdetails, err = utils.RetrieveArtDetails(c.source)
 	if err != nil && !strings.Contains(err.Error(), "You must provide a pattern") {
 		msg.Fatal(err.Error())
