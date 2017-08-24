@@ -18,7 +18,6 @@ import (
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
-	"strings"
 )
 
 type In struct {
@@ -46,7 +45,7 @@ func (c *In) Run() {
 	c.defaultingParams()
 
 	c.artdetails, err = utils.RetrieveArtDetails(c.source)
-	if err != nil && !strings.Contains(err.Error(), "You must provide a pattern") {
+	if err != nil {
 		msg.Fatal(err.Error())
 	}
 

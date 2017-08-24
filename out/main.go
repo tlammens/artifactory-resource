@@ -12,6 +12,7 @@ import (
 	"github.com/jfrogdev/jfrog-cli-go/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
+	"strings"
 )
 
 type Out struct {
@@ -44,7 +45,7 @@ func (c *Out) Run() {
 	c.defaultingParams()
 
 	c.artdetails, err = utils.RetrieveArtDetails(c.source)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "You must provide a pattern") {
 		msg.Fatal(err.Error())
 	}
 	src := c.folderPath(c.params.Source)
