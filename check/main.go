@@ -173,7 +173,7 @@ func (c Check) SemverFromPath(path string) (SemverFile, error) {
 	if len(allMatch[0]) < 3 {
 		return SemverFile{}, errors.New("Cannot find any semver in file.")
 	}
-	versionFound := c.SanitizeVersion(allMatch[0][2])
+	versionFound := c.SanitizeVersion(allMatch[len(allMatch)-1][2])
 
 	semverFound, err := semver.Make(versionFound)
 	if err != nil {
