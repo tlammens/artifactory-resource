@@ -1,26 +1,29 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
 
+	"strings"
+
 	chelper "github.com/ArthurHlt/go-concourse-helper"
-	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
-	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/generic"
+	artutils "github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/spec"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
-	"strings"
 )
 
 type Out struct {
 	cmd        *chelper.OutCommand
 	source     model.Source
 	params     model.OutParams
-	artdetails *config.ArtifactoryDetails
-	spec       *artutils.SpecFiles
+	artdetails *config.ServerDetails
+	spec       *spec.SpecFiles
 }
 
 func main() {
@@ -29,10 +32,12 @@ func main() {
 	}
 	Out.Run()
 }
+
 func (c *Out) Run() {
 	cmd := c.cmd
 	msg := c.cmd.Messager()
 	err := cmd.Source(&c.source)
+
 	msg.FatalIf("Error when parsing source from concourse", err)
 	utils.OverrideLoggerArtifactory(c.source.LogLevel)
 
@@ -57,7 +62,16 @@ func (c *Out) Run() {
 
 	props := c.mergeProps()
 
-	c.spec = artutils.CreateSpec(src, target, props, true, true, c.source.Regexp)
+	builder := spec.NewBuilder()
+	c.spec = builder.
+		Pattern(src).
+		Target(target).
+		Props(props).
+		Regexp(c.source.Regexp).
+		Recursive(true).
+		Flat(true).
+		BuildSpec()
+
 	msg.Log("[blue]Uploading[reset] file(s) to target '[blue]%s[reset]'...", target)
 	startDl := time.Now()
 	origStdout := os.Stdout
@@ -71,14 +85,19 @@ func (c *Out) Run() {
 	elapsed := time.Since(startDl)
 	msg.Log("[blue]Finished uploading[reset] file(s) to target '[blue]%s[reset]'.", target)
 
-	cmd.Send([]chelper.Metadata{
-		{
-			Name:  "total_uploaded",
-			Value: fmt.Sprintf("%d", totalUploaded),
+	json.NewEncoder(os.Stdout).Encode(chelper.Response{
+		Version: chelper.Version{
+			BuildNumber: src,
 		},
-		{
-			Name:  "upload_time",
-			Value: elapsed.String(),
+		Metadata: []chelper.Metadata{
+			{
+				Name:  "total_uploaded",
+				Value: fmt.Sprintf("%d", totalUploaded),
+			},
+			{
+				Name:  "upload_time",
+				Value: elapsed.String(),
+			},
 		},
 	})
 }
@@ -88,21 +107,27 @@ func (c *Out) defaultingParams() {
 		c.params.Threads = 3
 	}
 }
+
 func (c Out) folderPath(p string) string {
 	src := utils.AddTrailingSlashIfNeeded(c.cmd.SourceFolder())
 	src += utils.RemoveStartingSlashIfNeeded(p)
 	return src
 }
-func (c Out) Upload() (totalUploaded, totalFailed int, err error) {
-	return commands.Upload(
-		c.spec,
-		&commands.UploadFlags{
-			ArtDetails:     c.artdetails,
-			Threads:        c.params.Threads,
-			ExplodeArchive: c.params.ExplodeArchive,
-		},
-	)
+
+func (c Out) Upload() (int, int, error) {
+	cmd := generic.NewUploadCommand()
+	cmd.SetUploadConfiguration(&artutils.UploadConfiguration{
+		Threads:        c.params.Threads,
+		ExplodeArchive: c.params.ExplodeArchive,
+	}).SetBuildConfiguration(&artutils.BuildConfiguration{})
+	cmd.
+		SetServerDetails(c.artdetails).
+		SetSpec(c.spec)
+
+	err := cmd.Run()
+	return cmd.Result().SuccessCount(), cmd.Result().FailCount(), err
 }
+
 func (c Out) mergeProps() string {
 	msg := c.cmd.Messager()
 	props := ""

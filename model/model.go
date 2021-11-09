@@ -15,6 +15,7 @@ type Source struct {
 	LogLevel  string `json:"log_level"`
 	CACert    string `json:"ca_cert"`
 }
+
 type InParams struct {
 	Filename      string `json:"filename"`
 	Notflat       bool   `json:"not_flat"`
@@ -23,6 +24,7 @@ type InParams struct {
 	SplitCount    int    `json:"split_count"`
 	PropsFilename string `json:"props_filename"`
 }
+
 type OutParams struct {
 	Target         string `json:"target"`
 	Source         string `json:"source"`

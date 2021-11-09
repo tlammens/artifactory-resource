@@ -2,18 +2,20 @@ package main
 
 import (
 	"errors"
-	chelper "github.com/ArthurHlt/go-concourse-helper"
-	"github.com/blang/semver"
-	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
-	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
-	"github.com/orange-cloudfoundry/artifactory-resource/model"
-	"github.com/orange-cloudfoundry/artifactory-resource/utils"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+
+	chelper "github.com/ArthurHlt/go-concourse-helper"
+	"github.com/blang/semver"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/generic"
+	artutils "github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/spec"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
+	"github.com/orange-cloudfoundry/artifactory-resource/model"
+	"github.com/orange-cloudfoundry/artifactory-resource/utils"
 )
 
 type SemverFile struct {
@@ -28,8 +30,8 @@ const (
 type Check struct {
 	cmd        *chelper.CheckCommand
 	source     model.Source
-	artdetails *config.ArtifactoryDetails
-	spec       *artutils.SpecFiles
+	artdetails *config.ServerDetails
+	spec       *spec.SpecFiles
 }
 
 func main() {
@@ -43,8 +45,8 @@ func (c *Check) Run() {
 	msg := c.cmd.Messager()
 	c.source.Recursive = true
 	err := cmd.Source(&c.source)
-	msg.FatalIf("Error when parsing source from concourse", err)
 
+	msg.FatalIf("Error when parsing source from concourse", err)
 	utils.OverrideLoggerArtifactory(c.source.LogLevel)
 	err = utils.CheckReqParamsWithPattern(c.source)
 	if err != nil {
@@ -54,7 +56,16 @@ func (c *Check) Run() {
 	if err != nil {
 		msg.Fatal(err.Error())
 	}
-	c.spec = artutils.CreateSpec(c.source.Pattern, "", c.source.Props, c.source.Recursive, c.source.Flat, c.source.Regexp)
+	builder := spec.NewBuilder()
+	c.spec = builder.
+		Pattern(c.source.Pattern).
+		Target("").
+		Props(c.source.Props).
+		Regexp(c.source.Regexp).
+		Recursive(c.source.Recursive).
+		Flat(c.source.Flat).
+		BuildSpec()
+
 	origStdout := os.Stdout
 	os.Stdout = os.Stderr
 	results, err := c.Search()
@@ -64,29 +75,51 @@ func (c *Check) Run() {
 	msg.FatalIf("Error when retrieving versions", err)
 	cmd.Send(versions)
 }
-func (c Check) Search() ([]commands.SearchResult, error) {
-	return commands.Search(
-		c.spec,
-		&commands.SearchFlags{
-			ArtDetails: c.artdetails,
-		},
-	)
+
+func (c Check) Search() ([]artutils.SearchResult, error) {
+	res := []artutils.SearchResult{}
+	cmd := generic.NewSearchCommand()
+	cmd.
+		SetServerDetails(c.artdetails).
+		SetSpec(c.spec)
+
+	err := cmd.Run()
+	if err != nil {
+		return nil, err
+	}
+
+	reader := cmd.Result().Reader()
+	defer reader.Close()
+	_, err = reader.Length()
+	if err != nil {
+		return nil, err
+	}
+
+	for val := new(artutils.SearchResult); reader.NextRecord(val) == nil; val = new(artutils.SearchResult) {
+		res = append(res, *val)
+	}
+
+	return res, nil
 }
 
-func (c Check) RetrieveVersions(results []commands.SearchResult) ([]chelper.Version, error) {
+func (c Check) RetrieveVersions(results []artutils.SearchResult) ([]chelper.Version, error) {
 	versions := make([]chelper.Version, 0)
 	if len(results) == 0 {
 		return versions, nil
 	}
 	if c.source.Version == "" {
 		for _, file := range results {
-			versions = append(versions, chelper.Version{file.Path})
+			versions = append(versions, chelper.Version{
+				BuildNumber: file.Path,
+			})
 		}
 		return versions, nil
 	}
 	semverPrevious := c.RetrieveSemverFilePrevious()
 	if semverPrevious.Path != "" {
-		versions = append(versions, chelper.Version{semverPrevious.Path})
+		versions = append(versions, chelper.Version{
+			BuildNumber: semverPrevious.Path,
+		})
 	}
 	rangeSem, err := c.RetrieveRange()
 	if err != nil {
@@ -96,6 +129,7 @@ func (c Check) RetrieveVersions(results []commands.SearchResult) ([]chelper.Vers
 	versions = append(versions, c.SemverFilesToVersions(semverFiles)...)
 	return versions, nil
 }
+
 func (c *Check) RetrieveRange() (semver.Range, error) {
 	rangeSem, err := semver.ParseRange(c.SanitizeVersion(c.source.Version))
 	if err != nil {
@@ -109,21 +143,26 @@ func (c *Check) RetrieveRange() (semver.Range, error) {
 	}
 	return rangeSem, nil
 }
+
 func (c Check) SemverFilesToVersions(semverFiles []SemverFile) []chelper.Version {
 	sort.Slice(semverFiles, func(i, j int) bool {
 		return semverFiles[i].Version.LT(semverFiles[j].Version)
 	})
 	versions := make([]chelper.Version, 0)
 	for _, fileSemver := range semverFiles {
-		versions = append(versions, chelper.Version{fileSemver.Path})
+		versions = append(versions, chelper.Version{
+			BuildNumber: fileSemver.Path,
+		})
 	}
 	return versions
 }
+
 func (c Check) RetrieveSemverFilePrevious() SemverFile {
 	semverFile, _ := c.SemverFromPath(c.cmd.Version().BuildNumber)
 	return semverFile
 }
-func (c Check) ResultsToSemverFilesFiltered(results []commands.SearchResult, rangeSem semver.Range) []SemverFile {
+
+func (c Check) ResultsToSemverFilesFiltered(results []artutils.SearchResult, rangeSem semver.Range) []SemverFile {
 	msg := c.cmd.Messager()
 	semverFiles := make([]SemverFile, 0)
 	for _, file := range results {
@@ -146,6 +185,7 @@ func (c Check) ResultsToSemverFilesFiltered(results []commands.SearchResult, ran
 	}
 	return semverFiles
 }
+
 func (c Check) SanitizeVersion(version string) string {
 	splitVersion := strings.Split(version, ".")
 	if len(splitVersion) == 1 {
@@ -155,6 +195,7 @@ func (c Check) SanitizeVersion(version string) string {
 	}
 	return version
 }
+
 func (c Check) SemverFromPath(path string) (SemverFile, error) {
 	if path == "" {
 		return SemverFile{}, nil
