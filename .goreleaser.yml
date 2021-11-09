@@ -6,8 +6,11 @@ builds:
     main: ./check/main.go
     binary: 'assets_{{ .Os }}_{{ .Arch }}/check'
     no_unique_dist_dir: true
-    env: [ 'CGO_ENABLED=0' ]
-    gcflags: ['all=-trimpath={{.Env.PWD}}']
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s
+      - -w
     goos: [linux]
     goarch: [amd64]
   - <<: *build
@@ -39,10 +42,9 @@ dockers:
     goarch: amd64
     image_templates:
       - "orangeopensource/artifactory-resource:latest"
-      - "orangeopensource/artifactory-resource:v{{ .Tag }}"
+      - "orangeopensource/artifactory-resource:{{ .Tag }}"
       - "orangeopensource/artifactory-resource:v{{ .Major }}"
       - "orangeopensource/artifactory-resource:v{{ .Major }}.{{ .Minor }}"
-      - "orangeopensource/artifactory-resource:v{{ .RawVersion }}"
     build_flag_templates:
       # https://github.com/opencontainers/image-spec/
       - "--label=org.opencontainers.image.created={{ .Date }}"
