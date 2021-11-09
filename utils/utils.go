@@ -2,15 +2,15 @@ package utils
 
 import (
 	"errors"
-	artlog "github.com/jfrogdev/jfrog-cli-go/utils/cliutils/log"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
-	"github.com/mitchellh/colorstring"
-	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/coreutils"
+	artlog "github.com/jfrog/jfrog-client-go/utils/log"
+	"github.com/orange-cloudfoundry/artifactory-resource/model"
 )
 
 const (
@@ -23,6 +23,7 @@ func CheckReqParamsWithPattern(source model.Source) error {
 	}
 	return CheckReqParams(source)
 }
+
 func CheckReqParams(source model.Source) error {
 	if source.Url == "" {
 		return errors.New("You must pass an url to artifactory.")
@@ -32,18 +33,19 @@ func CheckReqParams(source model.Source) error {
 	}
 	return nil
 }
-func RetrieveArtDetails(source model.Source) (*config.ArtifactoryDetails, error) {
+
+func RetrieveArtDetails(source model.Source) (*config.ServerDetails, error) {
 	err := createCert(source.CACert)
 	if err != nil {
 		return nil, err
 	}
 	sshKeyPath, err := createSshKeyPath(source.SshKey)
-	return &config.ArtifactoryDetails{
-		Url:        AddTrailingSlashIfNeeded(source.Url),
-		User:       source.User,
-		Password:   source.Password,
-		ApiKey:     source.ApiKey,
-		SshKeyPath: sshKeyPath,
+	return &config.ServerDetails{
+		ArtifactoryUrl: AddTrailingSlashIfNeeded(source.Url),
+		Url:            AddTrailingSlashIfNeeded(source.Url),
+		User:           source.User,
+		Password:       source.Password,
+		SshKeyPath:     sshKeyPath,
 	}, nil
 
 }
@@ -54,17 +56,19 @@ func AddTrailingSlashIfNeeded(path string) string {
 	}
 	return path
 }
+
 func RemoveStartingSlashIfNeeded(path string) string {
 	if path != "" && strings.HasPrefix(path, "/") {
 		path = strings.TrimPrefix(path, "/")
 	}
 	return path
 }
+
 func createCert(caCert string) error {
 	if caCert == "" {
 		return nil
 	}
-	confPath, err := config.GetJfrogHomeDir()
+	confPath, err := coreutils.GetJfrogHomeDir()
 	if err != nil {
 		return err
 	}
@@ -72,6 +76,7 @@ func createCert(caCert string) error {
 	os.MkdirAll(securityPath, os.ModePerm)
 	return ioutil.WriteFile(securityPath+"cert.pem", []byte(caCert), 0644)
 }
+
 func createSshKeyPath(sshKey string) (string, error) {
 	if sshKey == "" {
 		return "", nil
@@ -86,14 +91,14 @@ func createSshKeyPath(sshKey string) (string, error) {
 	}
 	return filepath.Abs(filepath.Dir(file.Name()))
 }
+
 func OverrideLoggerArtifactory(logLevel string) {
-	logger := artlog.Logger().(*artlog.CliLogger)
-	logger.LogLevel = artlog.LogLevel["INFO"]
-	if val, ok := artlog.LogLevel[strings.ToUpper(logLevel)]; ok {
-		logger.LogLevel = val
+	lvl := artlog.INFO
+	if strings.ToUpper(logLevel) == "ERROR" {
+		lvl = artlog.ERROR
+	} else if strings.ToUpper(logLevel) == "DEBUG" {
+		lvl = artlog.DEBUG
 	}
-	logger.DebugLog = log.New(os.Stderr, colorstring.Color("[cyan][Artifactory Debug] "), 0)
-	logger.InfoLog = log.New(os.Stderr, colorstring.Color("[blue][Artifactory Info] "), 0)
-	logger.WarnLog = log.New(os.Stderr, colorstring.Color("[yellow][Artifactory Warn] "), 0)
-	logger.ErrorLog = log.New(os.Stderr, colorstring.Color("[red][Artifactory Error] "), 0)
+	logger := artlog.NewLogger(lvl, os.Stderr)
+	artlog.SetLogger(logger)
 }

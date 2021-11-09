@@ -13,9 +13,10 @@ import (
 	"crypto/x509"
 
 	chelper "github.com/ArthurHlt/go-concourse-helper"
-	"github.com/jfrogdev/jfrog-cli-go/artifactory/commands"
-	artutils "github.com/jfrogdev/jfrog-cli-go/artifactory/utils"
-	"github.com/jfrogdev/jfrog-cli-go/utils/config"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/generic"
+	artutils "github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/spec"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
 	"github.com/orange-cloudfoundry/artifactory-resource/model"
 	"github.com/orange-cloudfoundry/artifactory-resource/utils"
 )
@@ -24,8 +25,8 @@ type In struct {
 	cmd        *chelper.InCommand
 	source     model.Source
 	params     model.InParams
-	artdetails *config.ArtifactoryDetails
-	spec       *artutils.SpecFiles
+	artdetails *config.ServerDetails
+	spec       *spec.SpecFiles
 }
 
 func main() {
@@ -38,6 +39,7 @@ func (c *In) Run() {
 	cmd := c.cmd
 	msg := c.cmd.Messager()
 	err := cmd.Source(&c.source)
+
 	msg.FatalIf("Error when parsing source from concourse", err)
 	utils.OverrideLoggerArtifactory(c.source.LogLevel)
 	err = cmd.Params(&c.params)
@@ -59,7 +61,17 @@ func (c *In) Run() {
 	} else {
 		dest += fpath.Base(filePath)
 	}
-	c.spec = artutils.CreateSpec(filePath, dest, c.source.Props, false, !c.params.Notflat, false)
+
+	builder := spec.NewBuilder()
+	c.spec = builder.
+		Pattern(filePath).
+		Target(dest).
+		Props(c.source.Props).
+		Regexp(false).
+		Recursive(false).
+		Flat(!c.params.Notflat).
+		BuildSpec()
+
 	msg.Log("[blue]Downloading[reset] file '[blue]%s[reset]'...", filePath)
 	startDl := time.Now()
 	origStdout := os.Stdout
@@ -103,15 +115,18 @@ func (c *In) defaultingParams() {
 }
 
 func (c In) Download() error {
-	return commands.Download(
-		c.spec,
-		&commands.DownloadFlags{
-			ArtDetails:   c.artdetails,
-			Threads:      c.params.Threads,
-			SplitCount:   c.params.SplitCount,
-			MinSplitSize: int64(c.params.MinSplit),
-		},
-	)
+	cmd := generic.NewDownloadCommand()
+	cmd.SetConfiguration(&artutils.DownloadConfiguration{
+		Threads:      c.params.Threads,
+		SplitCount:   c.params.SplitCount,
+		MinSplitSize: int64(c.params.MinSplit),
+	}).SetBuildConfiguration(&artutils.BuildConfiguration{})
+
+	cmd.
+		SetServerDetails(c.artdetails).
+		SetSpec(c.spec)
+
+	return cmd.Run()
 }
 
 func (c In) DownloadProperties() error {
