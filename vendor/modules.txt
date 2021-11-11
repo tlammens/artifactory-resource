@@ -156,15 +156,19 @@ github.com/jbenet/go-context/io
 ## explicit; go 1.13
 github.com/jedib0t/go-pretty/v6/table
 github.com/jedib0t/go-pretty/v6/text
-# github.com/jfrog/gocmd v0.5.2
+# github.com/jfrog/build-info-go v0.1.0
+## explicit; go 1.15
+github.com/jfrog/build-info-go/entities
+# github.com/jfrog/gocmd v0.5.3
 ## explicit; go 1.15
 github.com/jfrog/gocmd/cache
 github.com/jfrog/gocmd/cmd
 github.com/jfrog/gocmd/executers/utils
-# github.com/jfrog/gofrog v1.0.7
+# github.com/jfrog/gofrog v1.1.0
 ## explicit; go 1.13
 github.com/jfrog/gofrog/io
 github.com/jfrog/gofrog/parallel
+github.com/jfrog/gofrog/stringutils
 # github.com/jfrog/jfrog-cli-core/v2 v2.4.2
 ## explicit; go 1.14
 github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/generic
@@ -184,8 +188,8 @@ github.com/jfrog/jfrog-cli-core/v2/utils/pip
 github.com/jfrog/jfrog-cli-core/v2/xray/commands
 github.com/jfrog/jfrog-cli-core/v2/xray/commands/audit
 github.com/jfrog/jfrog-cli-core/v2/xray/utils
-# github.com/jfrog/jfrog-client-go v1.5.2
-## explicit
+# github.com/jfrog/jfrog-client-go v1.6.0
+## explicit; go 1.17
 github.com/jfrog/jfrog-client-go/access
 github.com/jfrog/jfrog-client-go/access/auth
 github.com/jfrog/jfrog-client-go/access/services
@@ -340,7 +344,7 @@ github.com/xi2/xz
 # github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778
 ## explicit; go 1.15
 github.com/xo/terminfo
-# golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+# golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 ## explicit; go 1.17
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/cast5
