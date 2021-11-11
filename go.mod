@@ -6,7 +6,7 @@ require (
 	github.com/ArthurHlt/go-concourse-helper v0.0.0-20170620092918-e64471d7c7ec
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/jfrog/jfrog-cli-core/v2 v2.4.2
-	github.com/jfrog/jfrog-client-go v1.5.2
+	github.com/jfrog/jfrog-client-go v1.6.0
 )
 
 require (
@@ -31,7 +31,8 @@ require (
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jedib0t/go-pretty/v6 v6.2.2 // indirect
-	github.com/jfrog/gocmd v0.5.2 // indirect
+	github.com/jfrog/build-info-go v0.1.0 // indirect
+	github.com/jfrog/gocmd v0.5.3 // indirect
 	github.com/jfrog/gofrog v1.1.0 // indirect
 	github.com/juju/ansiterm v0.0.0-20180109212912-720a0952cc2a // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
