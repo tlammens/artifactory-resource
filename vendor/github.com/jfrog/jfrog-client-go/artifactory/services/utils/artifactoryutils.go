@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	buildinfo "github.com/jfrog/build-info-go/entities"
 	"io"
 	"net/http"
 	"net/url"
@@ -12,6 +11,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/auth"
 	"github.com/jfrog/jfrog-client-go/http/jfroghttpclient"
 	"github.com/jfrog/jfrog-client-go/utils"
